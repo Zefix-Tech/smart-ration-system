@@ -1,0 +1,45 @@
+.layout-container {
+    display: flex;
+    min-height: 100vh;
+    background-color: var(--bg-main);
+}
+
+.layout-main-column {
+    flex: 1;
+    margin-left: 256px;
+    /* 64 * 4px to match Tailwind w-64 */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    width: 100%;
+}
+
+.layout-content-area {
+    flex: 1;
+    padding: 1.5rem;
+    overflow-x: hidden;
+}
+
+.sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 40;
+    display: none;
+}
+
+@media (max-width: 1024px) {
+    .layout-main-column {
+        margin-left: 0;
+    }
+    .sidebar-overlay {
+        display: block;
+    }
+}
+
+@media (max-width: 640px) {
+    .layout-content-area {
+        padding: 1rem;
+    }
+}

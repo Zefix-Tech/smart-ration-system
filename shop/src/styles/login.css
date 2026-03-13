@@ -1,0 +1,169 @@
+.login-wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at top right, #f8fafc, #eff6ff);
+    padding: 1.5rem;
+}
+
+.gov-branding {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.gov-emblem {
+    height: 48px;
+    width: auto;
+}
+
+.gov-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #475569;
+}
+
+.gov-dept {
+    font-size: 0.875rem;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 420px;
+    background: white;
+    padding: 2.5rem;
+    border-radius: 1rem;
+    box-shadow: var(--shadow-xl);
+    border-top: 6px solid var(--primary-600);
+}
+
+.card-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.card-header h2 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin-top: 0.75rem;
+}
+
+.card-header p {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+.error-alert {
+    background-color: var(--color-red-light);
+    color: var(--color-red);
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    border: 1px solid #fecaca;
+}
+
+.form-group-gov {
+    margin-bottom: 1.25rem;
+}
+
+.label-gov {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #334155;
+    margin-bottom: 0.5rem;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-wrapper svg {
+    position: absolute;
+    left: 1rem;
+    color: #94a3b8;
+}
+
+.input-gov {
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 2.8rem;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.input-gov:focus {
+    outline: none;
+    border-color: var(--primary-500);
+    background-color: white;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+.captcha-row {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.captcha-display {
+    background: #1e293b;
+    color: white;
+    padding: 0.5rem 1rem;
+    font-family: 'Courier New', monospace;
+    font-weight: 900;
+    border-radius: 0.25rem;
+    letter-spacing: 2px;
+    font-style: italic;
+    user-select: none;
+}
+
+.refresh-btn {
+    padding: 0.5rem;
+    color: var(--primary-600);
+}
+
+.btn-login-gov {
+    width: 100%;
+    background-color: var(--primary-600);
+    color: white;
+    padding: 0.875rem;
+    border-radius: 0.5rem;
+    font-weight: 700;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    margin-top: 1.5rem;
+}
+
+.btn-login-gov:hover {
+    background-color: var(--primary-700);
+    transform: translateY(-1px);
+}
+
+.security-notice {
+    margin-top: 2rem;
+    font-size: 0.7rem;
+    color: #94a3b8;
+    text-align: center;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 1.5rem;
+}
+
+.login-footer {
+    margin-top: 3rem;
+    font-size: 0.75rem;
+    color: #94a3b8;
+}

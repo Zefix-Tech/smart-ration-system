@@ -1,0 +1,44 @@
+.layout-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 40;
+    display: none;
+}
+
+.layout-main-column {
+    flex: 1;
+    margin-left: 256px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    width: 100%;
+    transition: margin-left 0.3s ease;
+}
+
+.layout-content-area {
+    flex: 1;
+    padding: 1.5rem;
+    overflow-x: hidden;
+}
+
+@media (max-width: 1024px) {
+    .layout-main-column {
+        margin-left: 0;
+    }
+    .sidebar-overlay {
+        display: block;
+    }
+}
+
+@media (max-width: 640px) {
+    .layout-content-area {
+        padding: 1rem;
+    }
+}
