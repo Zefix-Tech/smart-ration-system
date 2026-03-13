@@ -30,7 +30,7 @@ router.get('/summary', async (req, res) => {
         const recentPurchases = await Order.find({ user: user._id }).limit(5).sort({ createdAt: -1 }).lean();
         const activeDelivery = await DeliveryRequest.findOne({ 
             user: user._id, 
-            status: { $in: ['pending', 'approved', 'dispatched'] } 
+            status: { $in: ['pending', 'approved', 'dispatched', 'delivered'] } 
         }).sort({ updatedAt: -1 }).lean();
 
         // user.shopId.stock is a plain object now thanks to .lean()
@@ -161,15 +161,16 @@ router.get('/history', async (req, res) => {
 router.get('/ration-status', async (req, res) => {
     try {
         const orders = await Order.find({ user: req.user.id }).sort({ createdAt: -1 });
+        const deliveries = await DeliveryRequest.find({ user: req.user.id }).sort({ createdAt: -1 });
         
-        const activeRequests = orders.filter(o => ['pending', 'approved', 'out_for_delivery'].includes(o.status));
-        const purchaseHistory = orders.filter(o => o.status === 'completed');
+        const activeRequests = orders.filter(o => ['pending', 'approved', 'out_for_delivery', 'dispatched'].includes(o.status));
+        const purchaseHistory = orders.filter(o => ['completed', 'delivered'].includes(o.status));
 
         // Map to requested format
         const formatHistory = purchaseHistory.map(o => ({
             date: o.createdAt.toISOString().split('T')[0],
             items: o.items.map(i => `${i.commodity.charAt(0).toUpperCase() + i.commodity.slice(1)} ${i.quantity}${i.unit}`),
-            status: 'Completed',
+            status: o.status, // Keep raw for frontend badge logic
             transactionId: o._id.toString().slice(-8).toUpperCase()
         }));
 
@@ -178,9 +179,16 @@ router.get('/ration-status', async (req, res) => {
                 id: o._id,
                 date: o.createdAt.toISOString().split('T')[0],
                 items: o.items.map(i => `${i.commodity.charAt(0).toUpperCase() + i.commodity.slice(1)} ${i.quantity}${i.unit}`),
-                status: o.status.charAt(0).toUpperCase() + o.status.slice(1)
+                status: o.status // Keep raw for frontend badge logic
             })),
-            purchaseHistory: formatHistory
+            purchaseHistory: formatHistory,
+            deliveryRequests: deliveries.map(d => ({
+                id: d._id,
+                date: d.createdAt.toISOString().split('T')[0],
+                reason: d.reason.replace(/_/g, ' ').toUpperCase(),
+                status: d.status, // Keep raw for frontend badge logic
+                address: d.address
+            }))
         });
     } catch (err) {
         res.status(500).json({ message: err.message });

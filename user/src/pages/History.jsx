@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { History as HistoryIcon, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { History as HistoryIcon, Clock, CheckCircle, XCircle, Truck } from 'lucide-react';
 import '../styles/pages.css';
 
 const PurchaseHistory = () => {
-    const [data, setData] = useState({ activeRequests: [], purchaseHistory: [] });
+    const [data, setData] = useState({ activeRequests: [], purchaseHistory: [], deliveryRequests: [] });
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -17,6 +17,7 @@ const PurchaseHistory = () => {
                 setData(res.data);
             } catch (err) {
                 console.error('Failed to fetch history');
+                setData({ activeRequests: [], purchaseHistory: [], deliveryRequests: [] });
             } finally {
                 setLoading(false);
             }
@@ -25,16 +26,30 @@ const PurchaseHistory = () => {
     }, []);
 
     const getStatusBadge = (status) => {
-        switch(status) {
-            case 'completed': return <span className="badge success">Completed</span>;
-            case 'pending': return <span className="badge warning">Pending Approval</span>;
-            case 'approved': return <span className="badge info">Approved</span>;
-            case 'cancelled': return <span className="badge danger">Cancelled</span>;
-            default: return <span className="badge">{status}</span>;
+        if (!status) return <span className="status-badge">Unknown</span>;
+
+        const s = status.toString().toLowerCase().trim();
+        switch (s) {
+            case 'completed':
+            case 'delivered':
+                return <span className="status-badge success">Delivered</span>;
+            case 'pending':
+                return <span className="status-badge warning">Pending</span>;
+            case 'approved':
+                return <span className="status-badge info">Approved</span>;
+            case 'dispatched':
+            case 'out_for_delivery':
+            case 'out for delivery':
+                return <span className="status-badge info">Out for Delivery</span>;
+            case 'cancelled':
+            case 'rejected':
+                return <span className="status-badge danger">Rejected</span>;
+            default:
+                return <span className="status-badge">{status}</span>;
         }
     };
 
-    const { activeRequests, purchaseHistory } = data;
+    const { activeRequests, purchaseHistory, deliveryRequests = [] } = data;
 
     return (
         <div className="page-container">
@@ -104,7 +119,7 @@ const PurchaseHistory = () => {
                                                     </div>
                                                 ))}
                                             </td>
-                                            <td>{getStatusBadge(order.status.toLowerCase())}</td>
+                                            <td>{getStatusBadge(order.status)}</td>
                                             <td><code className="tx-id">{order.transactionId}</code></td>
                                         </tr>
                                     )) : (
@@ -116,9 +131,40 @@ const PurchaseHistory = () => {
                             </table>
                         </div>
                     </div>
+
+                    {/* Part 3: Delivery Request History */}
+                    <div className="history-section" style={{ marginTop: '2.5rem' }}>
+                        <h3 className="section-subtitle"><Truck size={18} /> Delivery Request History</h3>
+                        <div className="table-card">
+                            <table className="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Reason</th>
+                                        <th>Status</th>
+                                        <th>Address</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {deliveryRequests.length > 0 ? deliveryRequests.map((req, idx) => (
+                                        <tr key={idx}>
+                                            <td>{new Date(req.date).toLocaleDateString()}</td>
+                                            <td>{req.reason}</td>
+                                            <td>{getStatusBadge(req.status)}</td>
+                                            <td style={{ fontSize: '0.85rem' }}>{req.address}</td>
+                                        </tr>
+                                    )) : (
+                                        <tr>
+                                            <td colSpan="4" className="no-data">No delivery request records found.</td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </>
             )}
-            
+
             <style>{`
                 .history-section { margin-bottom: 2rem; }
                 .section-subtitle { display: flex; align-items: center; gap: 10px; font-size: 1.1rem; color: #334155; margin-bottom: 1rem; font-weight: 700; }

@@ -27,12 +27,18 @@ const Login = () => {
     };
 
     useEffect(() => {
+        if (admin) {
+            navigate('/');
+        }
+    }, [admin, navigate]);
+
+    useEffect(() => {
         generateCaptcha();
     }, []);
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        
+
         if (enteredCaptcha.toUpperCase() !== captcha) {
             setError('Invalid CAPTCHA code. Please try again.');
             generateCaptcha();
@@ -59,9 +65,9 @@ const Login = () => {
     return (
         <div className="login-wrapper">
             <header className="gov-header">
-                <img 
-                    src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg" 
-                    alt="Emblem of India" 
+                <img
+                    src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg"
+                    alt="Emblem of India"
                     className="gov-emblem"
                 />
                 <div className="gov-header-text">
@@ -116,9 +122,9 @@ const Login = () => {
                         <label className="label-gov">Verification Code</label>
                         <div className="captcha-container">
                             <span className="captcha-image">{captcha}</span>
-                            <button 
-                                type="button" 
-                                onClick={generateCaptcha} 
+                            <button
+                                type="button"
+                                onClick={generateCaptcha}
                                 style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#0056b3' }}
                                 title="Refresh CAPTCHA"
                             >

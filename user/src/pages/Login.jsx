@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import '../styles/auth.css';
@@ -8,8 +8,14 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-    const { login } = useAuth();
+    const { user, login } = useAuth();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (user) {
+            navigate('/');
+        }
+    }, [user, navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -42,8 +48,8 @@ const Login = () => {
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
                         <label>Mobile Number</label>
-                        <input 
-                            type="tel" 
+                        <input
+                            type="tel"
                             placeholder="Enter registered mobile number"
                             value={phone}
                             onChange={(e) => setPhone(e.target.value)}
@@ -52,8 +58,8 @@ const Login = () => {
                     </div>
                     <div className="form-group">
                         <label>Password</label>
-                        <input 
-                            type="password" 
+                        <input
+                            type="password"
                             placeholder="Enter your password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}

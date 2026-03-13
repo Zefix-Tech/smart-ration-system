@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { ShieldCheck, Mail, Lock, RefreshCw } from 'lucide-react';
@@ -12,8 +12,16 @@ const Login = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const { login } = useAuth();
+    const { admin, login } = useAuth();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (admin) {
+            if (admin.role === 'shop_owner') navigate('/shop-dashboard');
+            else if (admin.role === 'delivery_person') navigate('/delivery-requests');
+            else navigate('/');
+        }
+    }, [admin, navigate]);
 
     const refreshCaptcha = () => {
         setCaptchaVal(Math.random().toString(36).substring(2, 8).toUpperCase());
