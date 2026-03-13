@@ -49,6 +49,8 @@ app.use('/api/admin', auth, require('./routes/donations-admin'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/orphanage', require('./routes/orphanage'));
 
+const connectDB = require('./config/db.js');
+
 // Serve static documents uploaded by citizens
 const path = require('path');
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -67,10 +69,11 @@ app.get('/api/health', (req, res) => res.json({ status: 'OK', timestamp: new Dat
 
 // Connect to MongoDB and start server
 const PORT = process.env.PORT || 5000;
-mongoose.connect(process.env.MONGO_URI)
-    .then(async () => {
-        console.log('✅ Connected to MongoDB');
 
+const startServer = async () => {
+    try {
+        await connectDB();
+        
         // Create default admin if none exists
         const adminCount = await Admin.countDocuments();
         if (adminCount === 0) {
@@ -87,8 +90,10 @@ mongoose.connect(process.env.MONGO_URI)
         app.listen(PORT, () => {
             console.log(`🚀 Server running on http://localhost:${PORT}`);
         });
-    })
-    .catch(err => {
-        console.error('MongoDB connection error:', err);
+    } catch (err) {
+        console.error('Server startup error:', err);
         process.exit(1);
-    });
+    }
+};
+
+startServer();

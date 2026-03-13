@@ -27,8 +27,9 @@ const seedData = async () => {
         ]);
         console.log('🗑️  Cleared existing collections');
 
-        // 1. Create Shops
+        // 1. Create Shops and Shop Admins
         const shops = [];
+        const shopPassword = await bcrypt.hash('shop123', 10);
         for (let i = 1; i <= 10; i++) {
             const district = districts[Math.floor(Math.random() * districts.length)];
             const shop = await Shop.create({
@@ -49,8 +50,18 @@ const seedData = async () => {
                 }
             });
             shops.push(shop);
+
+            // Create Shop Admin
+            const shopEmail = `shop${i}@srms.gov.in`;
+            await Admin.create({
+                name: `${district} Shop Admin #${i}`,
+                email: shopEmail,
+                password: shopPassword,
+                role: 'shopadmin',
+                shop: shop._id
+            });
         }
-        console.log(`🏠 Created ${shops.length} shops`);
+        console.log(`🏠 Created ${shops.length} shops and their admin accounts`);
 
         // 2. Create Users
         const users = [];
@@ -63,9 +74,9 @@ const seedData = async () => {
                 name: `Citizen User ${i}`,
                 phone: `887766554${i % 10}`,
                 password: hashedPassword,
+                address: `${i * 100}, Cross St, ${district}`,
                 rationCard: `TN${1000000 + i}`,
                 aadhaar: `1234567890${(i % 100).toString().padStart(2, '0')}`,
-                address: `${i * 101}, South Ave, ${district}`,
                 district: district,
                 familyMembers: Math.floor(Math.random() * 5) + 1,
                 category: categories[Math.floor(Math.random() * categories.length)],
@@ -128,6 +139,21 @@ const seedData = async () => {
         }
         console.log('📊 Created 6 months of historical stock data');
 
+        // 6. Create Default Admin if none exists
+        const adminEmail = 'admin@srms.gov.in';
+        const adminExists = await Admin.findOne({ email: adminEmail });
+        if (!adminExists) {
+            const hashedPw = await bcrypt.hash('admin123', 10);
+            await Admin.create({
+                name: 'Super Administrator',
+                email: adminEmail,
+                password: hashedPw,
+                role: 'superadmin'
+            });
+            console.log('✅ Default Super Admin created: admin@srms.gov.in | admin123');
+        } else {
+            console.log('ℹ️  Default Super Admin already exists');
+        }
         console.log('✨ Seeding completed successfully');
         process.exit(0);
     } catch (err) {
