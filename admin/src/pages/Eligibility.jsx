@@ -70,10 +70,31 @@ const Eligibility = () => {
         {
             header: 'Document', render: (row) => (
                 row.eligibilityDocumentUrl ? (
-                    <a href={`http://localhost:5001${row.eligibilityDocumentUrl}`} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-blue-600 hover:text-blue-800">
-                        <LuFileText /> View Proof
-                    </a>
+                    <div className="flex flex-col gap-1">
+                        <a href={`http://localhost:5001${row.eligibilityDocumentUrl}`} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-blue-600 hover:text-blue-800">
+                            <LuFileText /> View Proof
+                        </a>
+                    </div>
                 ) : <span className="text-gray-400 text-sm">Missing</span>
+            )
+        },
+        {
+            header: 'AI Result', render: (row) => (
+                <div className="text-xs">
+                    <div className={`font-bold ${row.aiVerificationStatus === 'AI_VERIFIED' ? 'text-green-600' : row.aiVerificationStatus === 'AI_REJECTED' ? 'text-red-600' : 'text-orange-500'}`}>
+                        {row.aiVerificationStatus?.replace('_', ' ') || 'PENDING'}
+                    </div>
+                    {row.aiConfidenceScore > 0 && (
+                        <div className="text-gray-500">
+                            Confidence: {(row.aiConfidenceScore * 100).toFixed(0)}%
+                        </div>
+                    )}
+                    {row.aiPredictedEligibility && (
+                        <div className="text-gray-400 italic">
+                            Match: {row.aiPredictedEligibility}
+                        </div>
+                    )}
+                </div>
             )
         },
         {
