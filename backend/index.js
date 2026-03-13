@@ -18,8 +18,10 @@ const { logAudit } = require('./middleware/audit');
 // Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/admin', require('./routes/auth'));
+app.use('/api/shop', require('./routes/auth'));
 app.use('/api/auth/user', require('./routes/user-auth'));
 app.use('/api/user-portal', auth, require('./routes/user-portal'));
+app.use('/api/citizen', auth, require('./routes/user-portal'));
 app.use('/api/dashboard', auth, require('./routes/dashboard'));
 app.use('/api/users', auth, logAudit('MANAGE_USERS', 'USERS'), require('./routes/users'));
 app.use('/api/shops', auth, logAudit('MANAGE_SHOPS', 'SHOPS'), require('./routes/shops'));
@@ -84,7 +86,7 @@ const startServer = async () => {
                 name: 'Super Administrator',
                 email: 'admin@srms.gov.in',
                 password: hashedPw,
-                role: 'superadmin'
+                role: 'shop_owner'
             });
             console.log('✅ Default Super Admin created: admin@srms.gov.in | admin123');
         }

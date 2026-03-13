@@ -18,10 +18,13 @@ const userSchema = new mongoose.Schema({
     status: { type: String, enum: ['active', 'suspended', 'inactive'], default: 'active' },
     avatar: { type: String, default: '' },
     lastPurchaseDate: { type: Date, default: null },
-    eligibilityType: { type: String, enum: ['Pregnant Woman', 'Senior Citizen (60+)', 'Permanently Disabled', 'Medical Condition', 'Osteogenesis Imperfecta (Bones)', 'None'], default: 'None' },
+    eligibilityType: { type: String, enum: ['Pregnant Woman', 'Senior Citizen (60+)', 'Permanently Disabled', 'Medically Eligible', 'Osteogenesis Imperfecta (Bone Disorder)', 'None'], default: 'None' },
     eligibilityReason: { type: String, default: '' },
     eligibilityDocumentUrl: { type: String, default: '' },
     eligibilityStatus: { type: String, enum: ['NONE', 'PENDING', 'VERIFIED', 'REJECTED'], default: 'NONE' },
+    aiVerificationStatus: { type: String, enum: ['AI_VERIFIED', 'AI_REJECTED', 'PENDING_REVIEW'], default: 'PENDING_REVIEW' },
+    aiConfidenceScore: { type: Number, default: 0 },
+    aiPredictedEligibility: { type: String, default: '' },
     registeredAt: { type: Date, default: Date.now }
 }, { timestamps: true });
 

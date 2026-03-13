@@ -27,11 +27,7 @@ router.post('/login', async (req, res) => {
             success: true,
             message: "Login successful",
             token, 
-            admin: { id: admin._id, name: admin.name, email: admin.email, role: admin.role, shop: admin.shop },
-            user: { 
-                email: admin.email, 
-                role: admin.role === 'shopadmin' ? 'shop_admin' : admin.role 
-            }
+            admin: { id: admin._id, name: admin.name, email: admin.email, role: admin.role, shop: admin.shop }
         });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });

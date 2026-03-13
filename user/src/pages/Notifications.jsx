@@ -37,6 +37,7 @@ const Notifications = () => {
             case 'stock_alert': return <Package size={20} color="#ffc107" />;
             case 'purchase_approved': return <CheckCircle size={20} color="#28a745" />;
             case 'delivery_update': return <Info size={20} color="#007bff" />;
+            case 'delivery_otp': return <AlertTriangle size={20} color="#ef4444" />;
             default: return <Bell size={20} color="#666" />;
         }
     };

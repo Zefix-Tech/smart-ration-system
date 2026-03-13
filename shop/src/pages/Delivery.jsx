@@ -14,8 +14,8 @@ const Delivery = () => {
     const [processing, setProcessing] = useState(false);
 
     const token = sessionStorage.getItem('srms_shop_token');
-    const isAdmin = admin?.role === 'shopadmin';
-    const isDeliveryPerson = admin?.role === 'deliveryman';
+    const isAdmin = admin?.role === 'shop_owner';
+    const isDeliveryPerson = admin?.role === 'delivery_person';
 
     const fetchRequests = async () => {
         setLoading(true);
@@ -51,14 +51,28 @@ const Delivery = () => {
     const handleDispatch = async (deliveryId) => {
         setProcessing(true);
         try {
-            const res = await axios.post(`http://localhost:5001/api/shop-delivery/dispatch/${deliveryId}`, {}, {
+            await axios.post(`http://localhost:5001/api/shop-delivery/dispatch/${deliveryId}`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            toast.success(`OTP sent to citizen's phone: ${res.data.otp}`); // Dev: shows OTP in toast
+            toast.success(`Delivery dispatched successfully!`); 
             fetchRequests();
-            setOtpModal(null);
         } catch (err) {
             toast.error(err.response?.data?.message || 'Failed to dispatch');
+        } finally {
+            setProcessing(false);
+        }
+    };
+
+    const handleGenerateOtp = async (deliveryId) => {
+        setProcessing(true);
+        try {
+            const res = await axios.post(`http://localhost:5001/api/shop-delivery/generate-otp/${deliveryId}`, {}, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            toast.success(`OTP generated and sent to citizen successfully!`); 
+            fetchRequests();
+        } catch (err) {
+            toast.error(err.response?.data?.message || 'Failed to generate OTP');
         } finally {
             setProcessing(false);
         }
@@ -144,7 +158,8 @@ const Delivery = () => {
                                                 senior_citizen: 'Senior Citizen (60+)',
                                                 injured: 'Injured / Temp. Disability',
                                                 disabled: 'Permanently Disabled',
-                                                osteogenesis_imperfecta: 'Osteogenesis Imperfecta (Bones)',
+                                                medically_eligible: 'Medically Eligible',
+                                                osteogenesis_imperfecta: 'Osteogenesis Imperfecta (Bone Disorder)',
                                                 other: 'Other'
                                             })[req.reason] || req.reason?.replace(/_/g, ' ')}
                                         </span>
@@ -178,11 +193,16 @@ const Delivery = () => {
                                         </>
                                     )}
                                     {isAdmin && req.status === 'approved' && (
-                                        <button onClick={() => handleDispatch(req._id)} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', background: '#7c3aed', color: '#fff', border: 'none', borderRadius: '7px', padding: '0.45rem 0.9rem', fontSize: '0.8rem', fontWeight: '600', cursor: 'pointer' }}>
-                                            <Send size={14} /> Dispatch & Send OTP
+                                        <button onClick={() => handleDispatch(req._id)} disabled={processing} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', background: '#7c3aed', color: '#fff', border: 'none', borderRadius: '7px', padding: '0.45rem 0.9rem', fontSize: '0.8rem', fontWeight: '600', cursor: processing ? 'not-allowed' : 'pointer' }}>
+                                            <Send size={14} /> Dispatch
                                         </button>
                                     )}
-                                    {(isDeliveryPerson || isAdmin) && req.status === 'dispatched' && (
+                                    {isDeliveryPerson && req.status === 'dispatched' && (
+                                        <button onClick={() => handleGenerateOtp(req._id)} disabled={processing} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', background: '#f59e0b', color: '#fff', border: 'none', borderRadius: '7px', padding: '0.45rem 0.9rem', fontSize: '0.8rem', fontWeight: '600', cursor: processing ? 'not-allowed' : 'pointer' }}>
+                                            <KeyRound size={14} /> Generate OTP
+                                        </button>
+                                    )}
+                                    {isDeliveryPerson && req.status === 'dispatched' && (
                                         <button onClick={() => { setOtpModal({ deliveryId: req._id }); setOtpInput(''); }} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', background: '#15803d', color: '#fff', border: 'none', borderRadius: '7px', padding: '0.45rem 0.9rem', fontSize: '0.8rem', fontWeight: '600', cursor: 'pointer' }}>
                                             <KeyRound size={14} /> Verify OTP
                                         </button>

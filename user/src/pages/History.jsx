@@ -4,17 +4,17 @@ import { History as HistoryIcon, Clock, CheckCircle, XCircle } from 'lucide-reac
 import '../styles/pages.css';
 
 const PurchaseHistory = () => {
-    const [orders, setOrders] = useState([]);
+    const [data, setData] = useState({ activeRequests: [], purchaseHistory: [] });
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchHistory = async () => {
             try {
                 const token = sessionStorage.getItem('srms_user_token');
-                const res = await axios.get('http://localhost:5001/api/user-portal/history', {
+                const res = await axios.get('http://localhost:5001/api/citizen/ration-status', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                setOrders(res.data);
+                setData(res.data);
             } catch (err) {
                 console.error('Failed to fetch history');
             } finally {
@@ -34,8 +34,7 @@ const PurchaseHistory = () => {
         }
     };
 
-    const pendingRequests = orders.filter(o => o.status === 'pending');
-    const purchaseHistory = orders.filter(o => o.status === 'approved' || o.status === 'completed');
+    const { activeRequests, purchaseHistory } = data;
 
     return (
         <div className="page-container">
@@ -61,12 +60,12 @@ const PurchaseHistory = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {pendingRequests.length > 0 ? pendingRequests.map((order) => (
-                                        <tr key={order._id}>
-                                            <td>{new Date(order.createdAt).toLocaleDateString()}</td>
+                                    {activeRequests.length > 0 ? activeRequests.map((order) => (
+                                        <tr key={order.id}>
+                                            <td>{new Date(order.date).toLocaleDateString()}</td>
                                             <td>
                                                 {order.items.map((item, i) => (
-                                                    <span key={i} className="mini-item">{item.commodity} ({item.quantity}{item.unit})</span>
+                                                    <span key={i} className="mini-item">{item}</span>
                                                 ))}
                                             </td>
                                             <td>{getStatusBadge(order.status)}</td>
@@ -95,18 +94,18 @@ const PurchaseHistory = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {purchaseHistory.length > 0 ? purchaseHistory.map((order) => (
-                                        <tr key={order._id}>
-                                            <td>{new Date(order.createdAt).toLocaleDateString()}</td>
+                                    {purchaseHistory.length > 0 ? purchaseHistory.map((order, idx) => (
+                                        <tr key={idx}>
+                                            <td>{new Date(order.date).toLocaleDateString()}</td>
                                             <td>
                                                 {order.items.map((item, i) => (
                                                     <div key={i} className="history-item">
-                                                        {item.commodity.toUpperCase()} - {item.quantity} {item.unit}
+                                                        {item}
                                                     </div>
                                                 ))}
                                             </td>
-                                            <td>{getStatusBadge(order.status)}</td>
-                                            <td><code className="tx-id">{order._id.slice(-8).toUpperCase()}</code></td>
+                                            <td>{getStatusBadge(order.status.toLowerCase())}</td>
+                                            <td><code className="tx-id">{order.transactionId}</code></td>
                                         </tr>
                                     )) : (
                                         <tr>

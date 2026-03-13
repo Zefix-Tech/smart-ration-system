@@ -7,7 +7,7 @@ const bcrypt = require('bcryptjs');
 // GET /api/delivery-team — list delivery persons for the shop
 router.get('/', async (req, res) => {
     try {
-        const members = await Admin.find({ role: 'deliveryman', shop: req.shopId }).select('-password');
+        const members = await Admin.find({ role: 'delivery_person', shop: req.shopId }).select('-password');
         res.json(members);
     } catch (err) {
         res.status(500).json({ message: err.message });
@@ -30,7 +30,7 @@ router.post('/add', async (req, res) => {
             name,
             email,
             password: hashedPassword,
-            role: 'deliveryman',
+            role: 'delivery_person',
             shop: req.shopId
         });
 
@@ -43,7 +43,7 @@ router.post('/add', async (req, res) => {
 // DELETE /api/delivery-team/:id — remove a delivery person
 router.delete('/:id', async (req, res) => {
     try {
-        const member = await Admin.findOne({ _id: req.params.id, role: 'deliveryman', shop: req.shopId });
+        const member = await Admin.findOne({ _id: req.params.id, role: 'delivery_person', shop: req.shopId });
         if (!member) return res.status(404).json({ message: 'Delivery person not found' });
         await member.deleteOne();
         res.json({ message: 'Delivery person removed' });

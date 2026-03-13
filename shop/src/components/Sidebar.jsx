@@ -9,15 +9,15 @@ import '../styles/sidebar.css';
 
 const Sidebar = ({ isOpen, closeSidebar }) => {
     const { admin } = useAuth();
-    const isAdmin = admin?.role === 'shopadmin';
-    const isDelivery = admin?.role === 'deliveryman';
+    const isAdmin = admin?.role === 'shop_owner';
+    const isDelivery = admin?.role === 'delivery_person';
 
     // Full menu for shop admin
     const adminNavItems = [
-        { path: '/', name: 'Overview', icon: <LayoutDashboard size={20} /> },
+        { path: '/shop-dashboard', name: 'Overview', icon: <LayoutDashboard size={20} /> },
         { path: '/stock', name: 'Stock Management', icon: <Package size={20} /> },
         { path: '/purchases', name: 'Purchase Requests', icon: <ShoppingCart size={20} /> },
-        { path: '/delivery', name: 'Delivery Requests', icon: <Truck size={20} /> },
+        { path: '/delivery-requests', name: 'Delivery Requests', icon: <Truck size={20} /> },
         { path: '/delivery-team', name: 'Delivery Team', icon: <Users size={20} /> },
         { path: '/distribution', name: 'Distribution Records', icon: <ClipboardList size={20} /> },
         { path: '/complaints', name: 'Complaints', icon: <MessageSquare size={20} /> },
@@ -27,7 +27,7 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
 
     // Restricted menu for delivery persons
     const deliveryNavItems = [
-        { path: '/delivery', name: 'Delivery Requests', icon: <Truck size={20} /> },
+        { path: '/delivery-requests', name: 'Delivery Requests', icon: <Truck size={20} /> },
     ];
 
     const navItems = isDelivery ? deliveryNavItems : adminNavItems;
@@ -54,7 +54,7 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
                                 className={({ isActive }) =>
                                     `sidebar-link ${isActive ? 'active' : ''}`
                                 }
-                                end={item.path === '/'}
+                                end={item.path === '/shop-dashboard'}
                             >
                                 <span className="sidebar-icon">{item.icon}</span>
                                 <span className="sidebar-text">{item.name}</span>

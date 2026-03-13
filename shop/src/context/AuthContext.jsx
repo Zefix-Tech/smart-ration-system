@@ -11,6 +11,10 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         const token = sessionStorage.getItem('srms_shop_token');
+        const storedAdmin = sessionStorage.getItem('srms_admin_data');
+        if (storedAdmin) {
+            setAdmin(JSON.parse(storedAdmin));
+        }
         if (token) {
             checkAuth(token);
         } else {
@@ -20,11 +24,12 @@ export const AuthProvider = ({ children }) => {
 
     const checkAuth = async (token) => {
         try {
-            const res = await axios.get(`${API_URL}/admin/me`, {
+            const res = await axios.get(`${API_URL}/shop/me`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            if (['shopadmin', 'deliveryman'].includes(res.data.role)) {
+            if (['shop_owner', 'delivery_person'].includes(res.data.role)) {
                 setAdmin(res.data);
+                sessionStorage.setItem('srms_admin_data', JSON.stringify(res.data));
             } else {
                 sessionStorage.removeItem('srms_shop_token');
             }
@@ -36,11 +41,12 @@ export const AuthProvider = ({ children }) => {
     };
 
     const login = async (email, password) => {
-        const res = await axios.post(`${API_URL}/admin/login`, { email, password });
-        if (['shopadmin', 'deliveryman'].includes(res.data.admin.role)) {
+        const res = await axios.post(`${API_URL.replace('/api', '/api/shop')}/login`, { email, password });
+        if (['shop_owner', 'delivery_person'].includes(res.data.admin.role)) {
             sessionStorage.setItem('srms_shop_token', res.data.token);
+            sessionStorage.setItem('srms_admin_data', JSON.stringify(res.data.admin));
             setAdmin(res.data.admin);
-            return true;
+            return res.data.admin; // Return admin for redirection logic in Login.jsx
         } else {
             throw new Error('Access Denied: Not a Shop Admin or Delivery Person');
         }
@@ -48,6 +54,7 @@ export const AuthProvider = ({ children }) => {
 
     const logout = () => {
         sessionStorage.removeItem('srms_shop_token');
+        sessionStorage.removeItem('srms_admin_data');
         setAdmin(null);
         window.location.href = '/login';
     };

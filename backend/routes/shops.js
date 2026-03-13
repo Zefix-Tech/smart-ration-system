@@ -51,7 +51,7 @@ router.post('/', async (req, res) => {
             name: ownerName || name,
             email,
             password: hashedPassword,
-            role: 'shopadmin',
+            role: 'shop_owner',
             shop: shop._id
         });
         await newAdmin.save();

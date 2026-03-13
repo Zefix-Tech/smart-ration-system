@@ -28,7 +28,10 @@ router.get('/summary', async (req, res) => {
         if (!user || !user.shopId) return res.status(404).json({ message: 'Shop allocation not found' });
 
         const recentPurchases = await Order.find({ user: user._id }).limit(5).sort({ createdAt: -1 }).lean();
-        const pendingDelivery = await DeliveryRequest.findOne({ user: user._id, status: 'pending' }).lean();
+        const activeDelivery = await DeliveryRequest.findOne({ 
+            user: user._id, 
+            status: { $in: ['pending', 'approved', 'dispatched'] } 
+        }).sort({ updatedAt: -1 }).lean();
 
         // user.shopId.stock is a plain object now thanks to .lean()
         const stockItems = [];
@@ -43,7 +46,7 @@ router.get('/summary', async (req, res) => {
         res.json({
             stock: stockItems,
             purchaseStatus: recentPurchases.length > 0 ? recentPurchases[0].status : 'No recent purchases',
-            deliveryStatus: pendingDelivery ? pendingDelivery.status : 'None',
+            deliveryStatus: activeDelivery ? activeDelivery.status : 'None',
             user: {
                 name: user.name,
                 rationCard: user.rationCard,
@@ -148,6 +151,37 @@ router.get('/history', async (req, res) => {
     try {
         const orders = await Order.find({ user: req.user.id }).sort({ createdAt: -1 });
         res.json(orders);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+// Ration Status for Citizen (Active Requests & Purchase History)
+// GET /api/citizen/ration-status
+router.get('/ration-status', async (req, res) => {
+    try {
+        const orders = await Order.find({ user: req.user.id }).sort({ createdAt: -1 });
+        
+        const activeRequests = orders.filter(o => ['pending', 'approved', 'out_for_delivery'].includes(o.status));
+        const purchaseHistory = orders.filter(o => o.status === 'completed');
+
+        // Map to requested format
+        const formatHistory = purchaseHistory.map(o => ({
+            date: o.createdAt.toISOString().split('T')[0],
+            items: o.items.map(i => `${i.commodity.charAt(0).toUpperCase() + i.commodity.slice(1)} ${i.quantity}${i.unit}`),
+            status: 'Completed',
+            transactionId: o._id.toString().slice(-8).toUpperCase()
+        }));
+
+        res.json({
+            activeRequests: activeRequests.map(o => ({
+                id: o._id,
+                date: o.createdAt.toISOString().split('T')[0],
+                items: o.items.map(i => `${i.commodity.charAt(0).toUpperCase() + i.commodity.slice(1)} ${i.quantity}${i.unit}`),
+                status: o.status.charAt(0).toUpperCase() + o.status.slice(1)
+            })),
+            purchaseHistory: formatHistory
+        });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }

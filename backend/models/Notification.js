@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const notificationSchema = new mongoose.Schema({
     title: { type: String, required: true },
     message: { type: String, required: true },
-    type: { type: String, enum: ['stock_update', 'announcement', 'alert', 'maintenance'], default: 'announcement' },
+    type: { type: String, enum: ['stock_update', 'announcement', 'alert', 'maintenance', 'delivery_otp'], default: 'announcement' },
     priority: { type: String, enum: ['low', 'normal', 'high', 'urgent'], default: 'normal' },
     sentBy: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin' },
     targetAudience: { type: String, enum: ['all', 'shop_owners', 'users', 'specific'], default: 'all' },

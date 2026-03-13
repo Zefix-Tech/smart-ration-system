@@ -67,13 +67,13 @@ const DeliveryTeam = () => {
         }
     };
 
-    if (admin?.role !== 'shopadmin') {
+    if (admin?.role !== 'shop_owner') {
         return (
             <div className="dashboard-container">
                 <div style={{ padding: '3rem', textAlign: 'center', color: '#dc2626' }}>
                     <Users size={48} style={{ marginBottom: '1rem' }} />
                     <h3>Access Denied</h3>
-                    <p>Only shop admins can manage the delivery team.</p>
+                    <p>Only shop owners can manage the delivery team.</p>
                 </div>
             </div>
         );

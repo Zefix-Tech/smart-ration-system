@@ -14,7 +14,8 @@ const deliveryRequestSchema = new mongoose.Schema({
     deliveredBy: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin', default: null },
     adminNote: { type: String, default: '' },
     requestDate: { type: Date, default: Date.now },
-    reviewedAt: { type: Date }
+    reviewedAt: { type: Date },
+    deliveredAt: { type: Date }
 }, { timestamps: true });
 
 module.exports = mongoose.model('DeliveryRequest', deliveryRequestSchema);

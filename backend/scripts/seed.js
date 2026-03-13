@@ -29,7 +29,7 @@ const seedData = async () => {
             Stock.deleteMany({}),
             Order.deleteMany({}),
             Complaint.deleteMany({}),
-            Admin.deleteMany({ role: { $in: ['shopadmin', 'deliveryman'] } }),
+            Admin.deleteMany({ role: { $in: ['shop_owner', 'delivery_person'] } }),
             RationCardRecord.deleteMany({}),
             DeliveryRequest.deleteMany({}),
             Donation.deleteMany({}),
@@ -71,7 +71,7 @@ const seedData = async () => {
                 name: `${district} Shop Admin #${i}`,
                 email: shopEmail,
                 password: shopPassword,
-                role: 'shopadmin',
+                role: 'shop_owner',
                 shop: shop._id
             });
 
@@ -81,7 +81,7 @@ const seedData = async () => {
                     name: `Delivery ${j} - Shop ${i}`,
                     email: `delivery${i}-${j}@srms.gov.in`,
                     password: deliveryPassword,
-                    role: 'deliveryman',
+                    role: 'delivery_person',
                     shop: shop._id
                 });
             }
@@ -94,7 +94,7 @@ const seedData = async () => {
             const assignedShop = shops[i % shops.length];
             const user = await User.create({
                 name: `Citizen User ${i}`,
-                phone: `887766554${i % 10}`,
+                phone: `88776655${i.toString().padStart(2, '0')}`,
                 password: userPassword,
                 address: `${i * 100}, Cross St, ${assignedShop.district}`,
                 rationCard: `TN${1000000 + i}`,

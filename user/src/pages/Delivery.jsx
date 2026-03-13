@@ -137,8 +137,8 @@ const DeliveryRequest = () => {
                                 <option value="Pregnant Woman">Pregnant Woman</option>
                                 <option value="Senior Citizen (60+)">Senior Citizen (60+)</option>
                                 <option value="Permanently Disabled">Permanently Disabled</option>
-                                <option value="Medical Condition">Medical Condition</option>
-                                <option value="Osteogenesis Imperfecta (Bones)">Osteogenesis Imperfecta (Bones)</option>
+                                <option value="Medically Eligible">Medically Eligible</option>
+                                <option value="Osteogenesis Imperfecta (Bone Disorder)">Osteogenesis Imperfecta (Bone Disorder)</option>
                             </select>
                         </div>
 
@@ -198,7 +198,8 @@ const DeliveryRequest = () => {
                             <option value="senior_citizen">Senior Citizen (60+)</option>
                             <option value="injured">Injured / Temporary Disability</option>
                             <option value="disabled">Permanently Disabled</option>
-                            <option value="osteogenesis_imperfecta">Osteogenesis Imperfecta (Bones)</option>
+                            <option value="medically_eligible">Medically Eligible</option>
+                            <option value="osteogenesis_imperfecta">Osteogenesis Imperfecta (Bone Disorder)</option>
                         </select>
                     </div>
 

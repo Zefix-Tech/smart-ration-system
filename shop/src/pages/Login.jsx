@@ -30,8 +30,12 @@ const Login = () => {
 
         setLoading(true);
         try {
-            const success = await login(email, password);
-            if (success) navigate('/');
+            const admin = await login(email, password);
+            if (admin) {
+                if (admin.role === 'shop_owner') navigate('/shop-dashboard');
+                else if (admin.role === 'delivery_person') navigate('/delivery-requests');
+                else navigate('/');
+            }
         } catch (err) {
             setError(err.response?.data?.message || 'Login failed. Please try again.');
         } finally {

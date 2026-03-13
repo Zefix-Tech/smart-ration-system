@@ -19,8 +19,8 @@ const ProtectedRoute = ({ children }) => {
 
     if (!admin) return <Navigate to="/login" replace />;
 
-    // Allow both shop admins and delivery persons
-    if (!['shopadmin', 'deliveryman'].includes(admin.role)) return <Navigate to="/login" replace />;
+    // Allow both shop owners and delivery persons
+    if (!['shop_owner', 'delivery_person'].includes(admin.role)) return <Navigate to="/login" replace />;
 
     return children;
 };
@@ -37,10 +37,12 @@ const AppRoutes = () => {
                     </ProtectedRoute>
                 }
             >
-                <Route path="/" element={<Dashboard />} />
+                <Route path="/shop-dashboard" element={<Dashboard />} />
+                <Route path="/" element={<Navigate to="/shop-dashboard" replace />} />
                 <Route path="/stock" element={<Stock />} />
                 <Route path="/purchases" element={<Purchases />} />
-                <Route path="/delivery" element={<Delivery />} />
+                <Route path="/delivery-requests" element={<Delivery />} />
+                <Route path="/delivery" element={<Navigate to="/delivery-requests" replace />} />
                 <Route path="/delivery-team" element={<DeliveryTeam />} />
                 <Route path="/complaints" element={<Complaints />} />
                 <Route path="/distribution" element={<Distribution />} />

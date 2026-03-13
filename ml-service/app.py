@@ -37,9 +37,9 @@ def predict_stock():
     wheat_demand = stock_model['wheat'].predict(X_input)[0]
     
     return jsonify({
-        "predicted_rice_demand": round(float(rice_demand), 2),
-        "predicted_sugar_demand": round(float(sugar_demand), 2),
-        "predicted_wheat_demand": round(float(wheat_demand), 2)
+        "predicted_rice_demand": int(float(rice_demand) * 100) / 100.0,
+        "predicted_sugar_demand": int(float(sugar_demand) * 100) / 100.0,
+        "predicted_wheat_demand": int(float(wheat_demand) * 100) / 100.0
     })
 
 @app.route('/detect-fraud', methods=['POST'])
@@ -69,6 +69,42 @@ def usage_pattern():
         "peak_time": "Morning (8AM - 12PM), Evening (5PM - 8PM)",
         "low_demand_time": "Afternoon (1PM - 4PM), Night (9PM - 7AM)",
         "insights": "Clusters indicate high congestion during early morning shifts."
+    })
+
+@app.route('/verify-certificate', methods=['POST'])
+def verify_certificate():
+    if 'document' not in request.files:
+        return jsonify({"error": "No document part"}), 400
+        
+    file = request.files['document']
+    eligibility_type = request.form.get('eligibilityType', '').lower()
+    
+    # Simple simulated OCR / Content Analysis
+    # In a real app, we'd use pytesseract.image_to_string(Image.open(file))
+    # For now, we simulate extraction based on filename or dummy text
+    filename = file.filename.lower()
+    content = f"Simulated content extracted from {filename}"
+    
+    keywords = {
+        "pregnant woman": ["pregnant", "pregnancy", "maternity", "antenatal"],
+        "senior citizen (60+)": ["senior", "citizen", "age", "60", "birth date"],
+        "permanently disabled": ["disabled", "disability", "incapacitated", "handicap"],
+        "medically eligible": ["medical", "condition", "doctor", "health", "patient"],
+        "osteogenesis imperfecta (bone disorder)": ["osteogenesis imperfecta", "bone fragility", "genetic bone disorder", "brittle bone"]
+    }
+    
+    target_keywords = keywords.get(eligibility_type, [])
+    found_keywords = [k for k in target_keywords if k in content or k in filename]
+    
+    confidence = 0.5 + (len(found_keywords) * 0.1)
+    if confidence > 0.95: confidence = 0.95
+    
+    is_verified = len(found_keywords) > 0
+    
+    return jsonify({
+        "status": "AI_VERIFIED" if is_verified else "AI_REJECTED",
+        "confidenceScore": int(confidence * 100) / 100.0,
+        "predictedEligibility": eligibility_type.capitalize() if is_verified else "Unknown"
     })
 
 if __name__ == '__main__':

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Users, ShoppingBag, Bell, CheckCircle, Send, TrendingUp, Package } from 'lucide-react';
+import { Users, ShoppingBag, Bell, CheckCircle, Send, TrendingUp, Package, Truck } from 'lucide-react';
 import toast from 'react-hot-toast';
 import {
     Chart as ChartJS,
@@ -33,6 +33,11 @@ const Dashboard = () => {
 
     const fetchDashboardData = async () => {
         try {
+            const adminData = JSON.parse(sessionStorage.getItem('srms_admin_data') || '{}');
+            if (adminData.role === 'delivery_person') {
+                window.location.href = '/delivery-requests';
+                return;
+            }
             const token = sessionStorage.getItem('srms_shop_token');
             const res = await axios.get('http://localhost:5001/api/shop/dashboard-stats', {
                 headers: { Authorization: `Bearer ${token}` }
@@ -72,8 +77,8 @@ const Dashboard = () => {
 
     const statCards = [
         { label: 'Registered Users', value: stats.stats.totalUsers, icon: <Users />, theme: 'blue-icon' },
-        { label: 'Monthly Purchases', value: stats.stats.monthlyPurchases, icon: <ShoppingBag />, theme: 'green-icon' },
-        { label: 'Pending Users', value: stats.stats.pendingUsers, icon: <Bell />, theme: 'orange-icon' },
+        { label: 'Pending Deliveries', value: stats.stats.pendingDeliveries, icon: <Package />, theme: 'orange-icon' },
+        { label: 'Completed Deliveries', value: stats.stats.completedDeliveries, icon: <Truck />, theme: 'green-icon' },
         { label: 'Completion Rate', value: `${stats.stats.completionRate}%`, icon: <CheckCircle />, theme: 'blue-icon' },
     ];
 

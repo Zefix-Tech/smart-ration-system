@@ -29,6 +29,9 @@ const upload = multer({
     limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
 });
 
+const axios = require('axios');
+const FormData = require('form-data');
+
 // Citizen: Upload document
 router.post('/upload', auth, upload.single('document'), async (req, res) => {
     try {
@@ -39,18 +42,50 @@ router.post('/upload', auth, upload.single('document'), async (req, res) => {
         const { eligibilityType, reason } = req.body;
         const documentUrl = `/uploads/${req.file.filename}`;
         
-        const user = await User.findByIdAndUpdate(
+        // Initial user update with PENDING status
+        let user = await User.findByIdAndUpdate(
             req.user.id,
             { 
                 eligibilityDocumentUrl: documentUrl,
                 eligibilityStatus: 'PENDING',
                 eligibilityType: eligibilityType || 'None',
-                eligibilityReason: reason || ''
+                eligibilityReason: reason || '',
+                aiVerificationStatus: 'PENDING_REVIEW',
+                aiConfidenceScore: 0,
+                aiPredictedEligibility: ''
             },
             { new: true }
         ).select('-password');
+
+        // Trigger AI Verification (Background-ish but wait for result for response if possible)
+        try {
+            const formData = new FormData();
+            formData.append('document', fs.createReadStream(req.file.path));
+            formData.append('eligibilityType', eligibilityType || 'None');
+
+            const mlRes = await axios.post('http://localhost:6000/verify-certificate', formData, {
+                headers: { ...formData.getHeaders() }
+            });
+
+            const { status, confidenceScore, predictedEligibility } = mlRes.data;
+
+            // Updated User with AI results
+            user = await User.findByIdAndUpdate(
+                req.user.id,
+                { 
+                    aiVerificationStatus: status,
+                    aiConfidenceScore: confidenceScore,
+                    aiPredictedEligibility: predictedEligibility
+                },
+                { new: true }
+            ).select('-password');
+
+        } catch (mlErr) {
+            console.error('AI Verification failed:', mlErr.message);
+            // We still proceed with the upload, manual verification will be needed
+        }
         
-        res.json({ message: 'Document uploaded successfully', user });
+        res.json({ message: 'Document uploaded and AI verification processed', user });
     } catch (err) {
         console.error('Upload error:', err);
         res.status(500).json({ message: err.message });

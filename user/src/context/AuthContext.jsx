@@ -11,6 +11,10 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         const token = sessionStorage.getItem('srms_user_token');
+        const storedUser = sessionStorage.getItem('srms_user_data');
+        if (storedUser) {
+            setUser(JSON.parse(storedUser));
+        }
         if (token) {
             checkAuth(token);
         } else {
@@ -24,8 +28,10 @@ export const AuthProvider = ({ children }) => {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setUser(res.data);
+            sessionStorage.setItem('srms_user_data', JSON.stringify(res.data));
         } catch (err) {
             sessionStorage.removeItem('srms_user_token');
+            sessionStorage.removeItem('srms_user_data');
         } finally {
             setLoading(false);
         }
@@ -40,6 +46,7 @@ export const AuthProvider = ({ children }) => {
         const res = await axios.post(`${API_URL}/login`, { phone, password });
         if (res.data.success) {
             sessionStorage.setItem('srms_user_token', res.data.token);
+            sessionStorage.setItem('srms_user_data', JSON.stringify(res.data.user));
             setUser(res.data.user);
             return true;
         }
@@ -48,6 +55,7 @@ export const AuthProvider = ({ children }) => {
 
     const logout = () => {
         sessionStorage.removeItem('srms_user_token');
+        sessionStorage.removeItem('srms_user_data');
         setUser(null);
         window.location.href = '/login';
     };

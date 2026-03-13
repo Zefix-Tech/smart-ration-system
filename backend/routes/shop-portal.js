@@ -23,6 +23,24 @@ const getShop = async (req, res, next) => {
 // Apply middleware
 router.use(getShop);
 
+// 0. Get Shop User Details
+// GET /api/shop/me
+router.get('/me', async (req, res) => {
+    try {
+        const admin = await Admin.findById(req.admin.id).select('name role');
+        if (!admin) {
+            return res.status(404).json({ message: 'Admin not found' });
+        }
+        res.json({
+            id: admin._id,
+            name: admin.name,
+            role: admin.role
+        });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
 
 // 1. Purchase Requests
 // GET /api/shop/purchase-requests
@@ -76,7 +94,7 @@ router.get('/notifications', async (req, res) => {
         const notifications = await Notification.find({ 
             $or: [
                 { targetAudience: 'all' },
-                { targetAudience: 'shops' }
+                { targetAudience: 'shop_owners' }
             ]
         }).sort({ sentAt: -1 }).lean();
 
@@ -263,12 +281,20 @@ router.get('/dashboard-stats', async (req, res) => {
             });
         }
 
+        // 4. Delivery Stats
+        const [pendingDeliveries, completedDeliveries] = await Promise.all([
+            DeliveryRequest.countDocuments({ shop: req.shopId, status: { $in: ['pending', 'approved', 'dispatched'] } }),
+            DeliveryRequest.countDocuments({ shop: req.shopId, status: 'delivered' })
+        ]);
+
         res.json({
             stats: {
                 totalUsers,
                 monthlyPurchases,
                 pendingUsers: Math.max(0, totalUsers - monthlyPurchases),
-                completionRate: totalUsers > 0 ? Math.round((monthlyPurchases / totalUsers) * 100) : 0
+                completionRate: totalUsers > 0 ? Math.round((monthlyPurchases / totalUsers) * 100) : 0,
+                pendingDeliveries,
+                completedDeliveries
             },
             stock: shop?.stock || {},
             history: weekData

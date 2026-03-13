@@ -25,54 +25,83 @@ router.patch('/update/:id', async (req, res) => {
     try {
         const { status } = req.body;
         const request = await DeliveryRequest.findByIdAndUpdate(req.params.id, { status, reviewedAt: new Date() }, { new: true }).populate('user', 'name phone');
-        
+
         if (status === 'approved' && request.shop) {
             // Find all deliverymen for this shop
-            const deliverymen = await Admin.find({ shop: request.shop, role: 'deliveryman' });
-            const deliverymanIds = deliverymen.map(d => d._id);
+            const deliverymen = await Admin.find({ shop: request.shop, role: 'delivery_person' });
+            const delivery_personIds = deliverymen.map(d => d._id);
 
-            if (deliverymanIds.length > 0) {
+            if (delivery_personIds.length > 0) {
                 const notification = new Notification({
                     title: 'New Delivery Assigned',
                     message: `A new delivery request for ${request.user?.name} has been approved and is ready for dispatch.`,
                     type: 'alert',
                     targetAudience: 'specific',
-                    recipients: deliverymanIds
+                    recipients: delivery_personIds
                 });
                 await notification.save();
             }
         }
-        
+
         res.json(request);
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 });
 
-// Dispatch delivery & generate OTP (shop admin action)
-router.post('/dispatch/:id', async (req, res) => {
+// Generate OTP (delivery person action)
+router.post('/generate-otp/:id', async (req, res) => {
     try {
         const delivery = await DeliveryRequest.findById(req.params.id).populate('user', 'name phone');
         if (!delivery) return res.status(404).json({ message: 'Delivery request not found' });
-        if (delivery.status !== 'approved') return res.status(400).json({ message: 'Delivery must be approved before dispatching' });
+        if (delivery.status !== 'dispatched') return res.status(400).json({ message: 'Delivery must be dispatched before generating OTP' });
 
         // Generate 6-digit OTP
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
-        const otpExpiry = new Date(Date.now() + 30 * 60 * 1000); // 30 min expiry
+        const otpExpiry = new Date(Date.now() + 5 * 60 * 1000); // 5 min expiry as requested
 
         delivery.otp = otp;
         delivery.otpExpiry = otpExpiry;
-        delivery.status = 'dispatched';
         await delivery.save();
+
+        // Create notification for the citizen user
+        const notification = new Notification({
+            title: 'Delivery OTP',
+            message: `Your ration delivery OTP is ${otp}. Please share this OTP with the delivery person to confirm delivery.`,
+            type: 'delivery_otp',
+            priority: 'high',
+            targetAudience: 'specific',
+            recipients: [delivery.user._id]
+        });
+        await notification.save();
 
         // In production: send SMS — for dev, log to console
         console.log(`📱 OTP for ${delivery.user?.name} (${delivery.user?.phone}): ${otp}`);
 
         res.json({
-            message: 'OTP generated and dispatched',
-            otp, // Return OTP in response for testing (remove in production)
-            phone: delivery.user?.phone
+            message: 'OTP generated and sent to citizen successfully',
+            expiresAt: otpExpiry
         });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+// Dispatch delivery (shop owner action - simplifies existing route)
+router.post('/dispatch/:id', async (req, res) => {
+    try {
+        const delivery = await DeliveryRequest.findById(req.params.id);
+        if (!delivery) return res.status(404).json({ message: 'Delivery request not found' });
+        if (delivery.status !== 'approved') return res.status(400).json({ message: 'Delivery must be approved before dispatching' });
+
+        delivery.status = 'dispatched';
+        await delivery.save();
+
+        if (delivery.order) {
+            await Order.findByIdAndUpdate(delivery.order, { status: 'out_for_delivery' });
+        }
+
+        res.json({ message: 'Delivery marked as dispatched. Delivery person can now generate OTP.' });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
@@ -97,6 +126,7 @@ router.post('/verify-otp/:id', async (req, res) => {
         delivery.otp = null;
         delivery.otpExpiry = null;
         delivery.reviewedAt = new Date();
+        delivery.deliveredAt = new Date();
         await delivery.save();
 
         // If there's a linked order, mark it completed and reduce stock
@@ -106,7 +136,7 @@ router.post('/verify-otp/:id', async (req, res) => {
                 const { deductStock } = require('../utils/stockUtils');
                 // Deduct stock using central utility
                 await deductStock(delivery.shop, order.items);
-                
+
                 // Mark order as completed
                 order.status = 'completed';
                 order.deliveredBy = deliveryPersonId || null;
