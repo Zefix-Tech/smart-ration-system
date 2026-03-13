@@ -14,7 +14,7 @@ const Purchases = () => {
     const fetchOrders = async () => {
         setLoading(true);
         try {
-            const token = localStorage.getItem('srms_shop_token');
+            const token = sessionStorage.getItem('srms_shop_token');
             const res = await axios.get(`http://localhost:5001/api/shop/purchase-requests?status=${statusFilter}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -32,7 +32,7 @@ const Purchases = () => {
 
     const handleAction = async (id, status) => {
         try {
-            const token = localStorage.getItem('srms_shop_token');
+            const token = sessionStorage.getItem('srms_shop_token');
             await axios.patch(`http://localhost:5001/api/shop-purchases/update/${id}`, 
                 { status },
                 { headers: { Authorization: `Bearer ${token}` } }

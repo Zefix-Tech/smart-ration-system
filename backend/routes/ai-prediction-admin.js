@@ -19,7 +19,7 @@ router.get('/', async (req, res) => {
             });
             mlResponse = response.data;
         } catch (mlErr) {
-            console.error("ML service error:", mlErr.message);
+            console.warn("⚠️  ML service not reachable (localhost:6000) — using fallback predictions. Start ml-service/app.py to enable AI predictions.");
             // Fallback object so the dashboard doesn't crash if the flask app goes down
             mlResponse = {
                 predicted_rice_demand: 8200,

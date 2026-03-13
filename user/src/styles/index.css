@@ -1,15 +1,21 @@
 :root {
-  --primary-color: #003366; /* Government Blue */
-  --secondary-color: #00509d;
-  --accent-color: #ff9933; /* Saffron Hint */
-  --bg-light: #f4f7f6;
-  --text-dark: #333;
-  --text-light: #fff;
-  --border-color: #ddd;
-  --success-color: #28a745;
-  --warning-color: #ffc107;
-  --danger-color: #dc3545;
-  --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --primary-color: #1a5c38;
+  /* Dark Forest Green - Primary */
+  --secondary-color: #2e7d32;
+  /* Government Green */
+  --accent-color: #c8a217;
+  /* Muted Gold Accent */
+  --bg-light: #f2f5f3;
+  /* Off-white page background */
+  --text-dark: #1c2b1e;
+  /* Deep charcoal text */
+  --text-light: #ffffff;
+  --border-color: #c5d8c8;
+  /* Subtle green-tinted border */
+  --success-color: #2e7d32;
+  --warning-color: #c8a217;
+  --danger-color: #b71c1c;
+  --card-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
   --sidebar-width: 260px;
   --topbar-height: 60px;
 }
@@ -49,7 +55,9 @@ button {
   transition: all 0.3s ease;
 }
 
-input, select, textarea {
+input,
+select,
+textarea {
   font-family: inherit;
   outline: none;
 }
@@ -58,13 +66,16 @@ input, select, textarea {
 ::-webkit-scrollbar {
   width: 8px;
 }
+
 ::-webkit-scrollbar-track {
   background: #f1f1f1;
 }
+
 ::-webkit-scrollbar-thumb {
   background: #ccc;
   border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: #aaa;
 }

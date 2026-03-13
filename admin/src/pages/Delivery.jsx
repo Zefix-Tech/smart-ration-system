@@ -19,7 +19,7 @@ const Delivery = () => {
     const fetchRequests = async () => {
         setLoading(true);
         try {
-            const token = localStorage.getItem('srms_token');
+            const token = sessionStorage.getItem('srms_token');
             const res = await axios.get(`http://localhost:5001/api/delivery?page=${page}&limit=10`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -41,7 +41,7 @@ const Delivery = () => {
         const note = window.prompt(`Enter note for ${status} decision (optional):`);
         if (note === null) return; // cancelled
         try {
-            const token = localStorage.getItem('srms_token');
+            const token = sessionStorage.getItem('srms_token');
             await axios.patch(`http://localhost:5001/api/delivery/${id}`, { status, adminNote: note }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -55,7 +55,7 @@ const Delivery = () => {
         e.preventDefault();
         const loadingToast = toast.loading('Submitting delivery request...');
         try {
-            const token = localStorage.getItem('srms_token');
+            const token = sessionStorage.getItem('srms_token');
             await axios.post('http://localhost:5001/api/delivery', formData, {
                 headers: { Authorization: `Bearer ${token}` }
             });

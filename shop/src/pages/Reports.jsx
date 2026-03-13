@@ -25,7 +25,7 @@ const Reports = () => {
     const fetchReportData = async () => {
         setLoading(true);
         try {
-            const token = localStorage.getItem('srms_shop_token');
+            const token = sessionStorage.getItem('srms_shop_token');
             const res = await axios.get(`http://localhost:5001/api/shop-reports/${admin.shop._id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });

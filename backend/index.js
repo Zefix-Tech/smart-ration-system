@@ -41,6 +41,8 @@ app.use('/api/reports', auth, require('./routes/reports'));
 app.use('/api/ml', require('./routes/ml'));
 app.use('/api/audit', auth, superAdminOnly, require('./routes/audit'));
 app.use('/api/eligibility', auth, require('./routes/eligibility'));
+app.use('/api/ration-records', auth, require('./routes/ration-records'));
+
 app.use('/api/shop', auth, require('./routes/shop-portal'));
 app.use('/api/admin/analytics', auth, require('./routes/analytics'));
 app.use('/api/admin/ai-stock-prediction', auth, require('./routes/ai-prediction-admin'));

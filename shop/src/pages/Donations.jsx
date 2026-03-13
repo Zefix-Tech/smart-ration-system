@@ -14,7 +14,7 @@ const Donations = () => {
         if (!admin?.shop?._id) return;
         setLoading(true);
         try {
-            const token = localStorage.getItem('srms_shop_token');
+            const token = sessionStorage.getItem('srms_shop_token');
             const res = await axios.get(`http://localhost:5001/api/shop-donations/${admin.shop._id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -32,7 +32,7 @@ const Donations = () => {
 
     const handleAction = async (id, status) => {
         try {
-            const token = localStorage.getItem('srms_shop_token');
+            const token = sessionStorage.getItem('srms_shop_token');
             await axios.patch(`http://localhost:5001/api/shop-donations/update/${id}`, 
                 { status },
                 { headers: { Authorization: `Bearer ${token}` } }

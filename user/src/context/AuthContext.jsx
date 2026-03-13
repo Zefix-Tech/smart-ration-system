@@ -10,7 +10,7 @@ export const AuthProvider = ({ children }) => {
     const API_URL = 'http://localhost:5001/api/auth/user';
 
     useEffect(() => {
-        const token = localStorage.getItem('srms_user_token');
+        const token = sessionStorage.getItem('srms_user_token');
         if (token) {
             checkAuth(token);
         } else {
@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }) => {
             });
             setUser(res.data);
         } catch (err) {
-            localStorage.removeItem('srms_user_token');
+            sessionStorage.removeItem('srms_user_token');
         } finally {
             setLoading(false);
         }
@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }) => {
     const login = async (phone, password) => {
         const res = await axios.post(`${API_URL}/login`, { phone, password });
         if (res.data.success) {
-            localStorage.setItem('srms_user_token', res.data.token);
+            sessionStorage.setItem('srms_user_token', res.data.token);
             setUser(res.data.user);
             return true;
         }
@@ -47,7 +47,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const logout = () => {
-        localStorage.removeItem('srms_user_token');
+        sessionStorage.removeItem('srms_user_token');
         setUser(null);
         window.location.href = '/login';
     };

@@ -16,7 +16,7 @@ const Profile = () => {
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const token = localStorage.getItem('srms_user_token');
+                const token = sessionStorage.getItem('srms_user_token');
                 const res = await axios.get('http://localhost:5001/api/user-portal/profile', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
@@ -35,7 +35,7 @@ const Profile = () => {
         setUpdating(true);
         setMessage('');
         try {
-            const token = localStorage.getItem('srms_user_token');
+            const token = sessionStorage.getItem('srms_user_token');
             // Update text fields
             await axios.patch('http://localhost:5001/api/user-portal/profile', profile, {
                 headers: { Authorization: `Bearer ${token}` }
@@ -56,7 +56,7 @@ const Profile = () => {
         }
         setUpdating(true);
         try {
-            const token = localStorage.getItem('srms_user_token');
+            const token = sessionStorage.getItem('srms_user_token');
             await axios.patch('http://localhost:5001/api/user-portal/password', {
                 currentPassword: passwords.current,
                 newPassword: passwords.new

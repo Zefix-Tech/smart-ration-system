@@ -8,7 +8,7 @@ const router = express.Router();
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
-        const admin = await Admin.findOne({ email });
+        const admin = await Admin.findOne({ email }).populate('shop');
         if (!admin) return res.status(400).json({ message: 'Invalid email or password' });
 
         const isMatch = await bcrypt.compare(password, admin.password);
@@ -27,7 +27,7 @@ router.post('/login', async (req, res) => {
             success: true,
             message: "Login successful",
             token, 
-            admin: { id: admin._id, name: admin.name, email: admin.email, role: admin.role },
+            admin: { id: admin._id, name: admin.name, email: admin.email, role: admin.role, shop: admin.shop },
             user: { 
                 email: admin.email, 
                 role: admin.role === 'shopadmin' ? 'shop_admin' : admin.role 

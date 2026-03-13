@@ -10,7 +10,7 @@ const Stock = () => {
     useEffect(() => {
         const fetchStock = async () => {
             try {
-                const token = localStorage.getItem('srms_user_token');
+                const token = sessionStorage.getItem('srms_user_token');
                 const res = await axios.get('http://localhost:5001/api/user-portal/stock', {
                     headers: { Authorization: `Bearer ${token}` }
                 });

@@ -26,7 +26,7 @@ const Users = () => {
     const fetchUsers = async () => {
         setLoading(true);
         try {
-            const token = localStorage.getItem('srms_token');
+            const token = sessionStorage.getItem('srms_token');
             const res = await axios.get(`http://localhost:5001/api/users?page=${page}&limit=10&search=${search}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -49,7 +49,7 @@ const Users = () => {
         if (!window.confirm(`Are you sure you want to ${newStatus === 'suspended' ? 'suspend' : 'activate'} this user?`)) return;
         const loadingToast = toast.loading('Updating user status...');
         try {
-            const token = localStorage.getItem('srms_token');
+            const token = sessionStorage.getItem('srms_token');
             await axios.patch(`http://localhost:5001/api/users/${userId}/status`, { status: newStatus }, {
                 headers: { Authorization: `Bearer ${token}` }
             });

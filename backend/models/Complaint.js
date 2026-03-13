@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const complaintSchema = new mongoose.Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    shop: { type: mongoose.Schema.Types.ObjectId, ref: 'Shop', default: null },
     subject: { type: String, default: '' },
     message: { type: String, required: true },
     category: { type: String, enum: ['quality', 'quantity', 'service', 'fraud', 'other'], default: 'other' },

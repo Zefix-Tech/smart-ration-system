@@ -32,7 +32,7 @@ const MapView = () => {
     useEffect(() => {
         const fetchMapData = async () => {
             try {
-                const token = localStorage.getItem('srms_token');
+                const token = sessionStorage.getItem('srms_token');
                 
                 // Fetch Shops
                 const shopRes = await axios.get('http://localhost:5001/api/shops?limit=200', {

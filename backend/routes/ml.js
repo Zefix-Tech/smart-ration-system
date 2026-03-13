@@ -24,7 +24,7 @@ router.post('/predict-stock', async (req, res) => {
         const data = await response.json();
         res.json({ success: true, data });
     } catch (err) {
-        console.error('Error calling ML service for stock prediction:', err.message);
+        console.warn('⚠️  ML Service stock prediction not reachable (localhost:6000). Start ml-service/app.py to enable.');
         res.status(500).json({ success: false, message: 'Failed to fetch prediction from ML Service', error: err.message });
     }
 });
@@ -50,7 +50,7 @@ router.post('/detect-fraud', async (req, res) => {
         const data = await response.json();
         res.json({ success: true, data });
     } catch (err) {
-        console.error('Error calling ML service for fraud detection:', err.message);
+        console.warn('⚠️  ML Service fraud detection not reachable (localhost:6000). Start ml-service/app.py to enable.');
         res.status(500).json({ success: false, message: 'Failed to access ML fraud detection', error: err.message });
     }
 });
@@ -67,7 +67,7 @@ router.get('/usage-pattern', async (req, res) => {
         const data = await response.json();
         res.json({ success: true, data });
     } catch (err) {
-        console.error('Error calling ML service for usage pattern:', err.message);
+        console.warn('⚠️  ML Service usage pattern not reachable (localhost:6000). Start ml-service/app.py to enable.');
         res.status(500).json({ success: false, message: 'Failed to fetch usage pattern from ML Service', error: err.message });
     }
 });

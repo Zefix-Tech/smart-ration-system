@@ -12,7 +12,7 @@ const Dashboard = () => {
     useEffect(() => {
         const fetchSummary = async () => {
             try {
-                const token = localStorage.getItem('srms_user_token');
+                const token = sessionStorage.getItem('srms_user_token');
                 const res = await axios.get('http://localhost:5001/api/user-portal/summary', {
                     headers: { Authorization: `Bearer ${token}` }
                 });

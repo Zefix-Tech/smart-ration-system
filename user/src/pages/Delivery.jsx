@@ -6,12 +6,12 @@ import '../styles/pages.css';
 
 const DeliveryRequest = () => {
     const { user } = useAuth();
-    
+
     // Eligibility Form State
     const [eligibilityData, setEligibilityData] = useState({ type: '', reason: '' });
     const [file, setFile] = useState(null);
     const [uploading, setUploading] = useState(false);
-    
+
     // Delivery Form State
     const [formData, setFormData] = useState({
         reason: '',
@@ -27,12 +27,12 @@ const DeliveryRequest = () => {
         if (!file) {
             return setMessage({ type: 'error', text: 'Please upload a supporting document.' });
         }
-        
+
         setUploading(true);
         setMessage({ type: '', text: '' });
-        
+
         try {
-            const token = localStorage.getItem('srms_user_token');
+            const token = sessionStorage.getItem('srms_user_token');
             const data = new FormData();
             data.append('document', file);
             data.append('eligibilityType', eligibilityData.type);
@@ -41,7 +41,7 @@ const DeliveryRequest = () => {
             await axios.post('http://localhost:5001/api/eligibility/upload', data, {
                 headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` }
             });
-            
+
             setMessage({ type: 'success', text: 'Eligibility verification submitted to admin.' });
             // Ideally we force a user context refresh here, but reloading the page is a quick sync
             setTimeout(() => window.location.reload(), 1500);
@@ -59,15 +59,17 @@ const DeliveryRequest = () => {
         setMessage({ type: '', text: '' });
 
         try {
-            const token = localStorage.getItem('srms_user_token');
-            // Re-using the same endpoint, but we don't pass certificateUrl anymore
-            await axios.post('http://localhost:5001/api/user-portal/request-delivery', formData, {
+            const token = sessionStorage.getItem('srms_user_token');
+            const res = await axios.post('http://localhost:5001/api/user-portal/request-delivery', formData, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            setMessage({ type: 'success', text: 'Delivery request submitted successfully!' });
+            setMessage({ type: 'success', text: res.data.message || 'Delivery request submitted successfully!' });
             setFormData({ reason: '', description: '', address: '' });
         } catch (err) {
-            setMessage({ type: 'error', text: 'Failed to submit request. Ensure all fields are filled.' });
+            setMessage({
+                type: 'error',
+                text: err.response?.data?.message || 'Failed to submit request. Ensure you have a pending ration purchase.'
+            });
         } finally {
             setLoading(false);
         }
@@ -122,13 +124,13 @@ const DeliveryRequest = () => {
                         <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><FileText size={20} /> Delivery Eligibility Verification</h3>
                         <p style={{ color: '#666', fontSize: '0.9rem', marginTop: '5px' }}>You must verify your eligibility before requesting a delivery.</p>
                     </div>
-                    
+
                     <form onSubmit={handleEligibilitySubmit}>
                         <div className="form-group">
                             <label>Select Eligibility Type</label>
-                            <select 
-                                value={eligibilityData.type} 
-                                onChange={(e) => setEligibilityData({...eligibilityData, type: e.target.value})}
+                            <select
+                                value={eligibilityData.type}
+                                onChange={(e) => setEligibilityData({ ...eligibilityData, type: e.target.value })}
                                 required
                             >
                                 <option value="">Select Type</option>
@@ -136,6 +138,7 @@ const DeliveryRequest = () => {
                                 <option value="Senior Citizen (60+)">Senior Citizen (60+)</option>
                                 <option value="Permanently Disabled">Permanently Disabled</option>
                                 <option value="Medical Condition">Medical Condition</option>
+                                <option value="Osteogenesis Imperfecta (Bones)">Osteogenesis Imperfecta (Bones)</option>
                             </select>
                         </div>
 
@@ -154,10 +157,10 @@ const DeliveryRequest = () => {
 
                         <div className="form-group">
                             <label>Reason for Request (Optional)</label>
-                            <textarea 
+                            <textarea
                                 placeholder="Enter any additional reason"
                                 value={eligibilityData.reason}
-                                onChange={(e) => setEligibilityData({...eligibilityData, reason: e.target.value})}
+                                onChange={(e) => setEligibilityData({ ...eligibilityData, reason: e.target.value })}
                                 rows="2"
                             ></textarea>
                         </div>
@@ -181,13 +184,13 @@ const DeliveryRequest = () => {
                         <Lock size={16} /> Form locked until eligibility is verified.
                     </div>
                 )}
-                
+
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
                         <label>Delivery Reason Category</label>
-                        <select 
-                            value={formData.reason} 
-                            onChange={(e) => setFormData({...formData, reason: e.target.value})}
+                        <select
+                            value={formData.reason}
+                            onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
                             required
                         >
                             <option value="">Select Category</option>
@@ -195,15 +198,16 @@ const DeliveryRequest = () => {
                             <option value="senior_citizen">Senior Citizen (60+)</option>
                             <option value="injured">Injured / Temporary Disability</option>
                             <option value="disabled">Permanently Disabled</option>
+                            <option value="osteogenesis_imperfecta">Osteogenesis Imperfecta (Bones)</option>
                         </select>
                     </div>
 
                     <div className="form-group">
                         <label>Secondary Address (if different from registered)</label>
-                        <textarea 
+                        <textarea
                             placeholder="Enter delivery address"
                             value={formData.address}
-                            onChange={(e) => setFormData({...formData, address: e.target.value})}
+                            onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                             rows="2"
                             required
                         ></textarea>
@@ -211,10 +215,10 @@ const DeliveryRequest = () => {
 
                     <div className="form-group">
                         <label>Additional Notes (Optional)</label>
-                        <textarea 
+                        <textarea
                             placeholder="e.g. Near Big Temple, Second Street"
                             value={formData.description}
-                            onChange={(e) => setFormData({...formData, description: e.target.value})}
+                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                             rows="2"
                         ></textarea>
                     </div>

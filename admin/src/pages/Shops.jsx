@@ -17,13 +17,13 @@ const Shops = () => {
     const [modalMode, setModalMode] = useState('add');
     const [selectedShop, setSelectedShop] = useState(null);
     const [formData, setFormData] = useState({
-        shopId: '', name: '', ownerName: '', phone: '', address: '', district: '', latitude: '', longitude: ''
+        shopId: '', name: '', ownerName: '', phone: '', address: '', district: '', latitude: '', longitude: '', email: '', password: ''
     });
 
     const fetchShops = async () => {
         setLoading(true);
         try {
-            const token = localStorage.getItem('srms_token');
+            const token = sessionStorage.getItem('srms_token');
             const res = await axios.get(`http://localhost:5001/api/shops?page=${page}&limit=10&search=${search}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -46,7 +46,7 @@ const Shops = () => {
         if (!window.confirm(`Are you sure you want to ${newStatus === 'suspended' ? 'disable' : 'enable'} this shop?`)) return;
         const loadingToast = toast.loading('Updating shop status...');
         try {
-            const token = localStorage.getItem('srms_token');
+            const token = sessionStorage.getItem('srms_token');
             await axios.patch(`http://localhost:5001/api/shops/${shopId}/status`, { status: newStatus }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -63,12 +63,12 @@ const Shops = () => {
         if (shop) {
             setSelectedShop(shop);
             setFormData({
-                shopId: shop.shopId, name: shop.name, ownerName: shop.ownerName, phone: shop.phone, 
-                address: shop.address, district: shop.district, latitude: shop.latitude || '', longitude: shop.longitude || ''
+                shopId: shop.shopId, name: shop.name, ownerName: shop.ownerName, phone: shop.phone,
+                address: shop.address, district: shop.district, latitude: shop.latitude || '', longitude: shop.longitude || '', email: '', password: ''
             });
         } else {
             setSelectedShop(null);
-            setFormData({ shopId: '', name: '', ownerName: '', phone: '', address: '', district: '', latitude: '', longitude: '' });
+            setFormData({ shopId: '', name: '', ownerName: '', phone: '', address: '', district: '', latitude: '', longitude: '', email: '', password: '' });
         }
         setIsModalOpen(true);
     };
@@ -82,7 +82,7 @@ const Shops = () => {
         e.preventDefault();
         const loadingToast = toast.loading(`${modalMode === 'add' ? 'Creating' : 'Updating'} shop...`);
         try {
-            const token = localStorage.getItem('srms_token');
+            const token = sessionStorage.getItem('srms_token');
             const payload = {
                 ...formData,
                 latitude: parseFloat(formData.latitude) || 0,
@@ -112,15 +112,15 @@ const Shops = () => {
         { header: 'Shop ID', accessor: 'shopId', render: (row) => <div className="font-mono text-xs text-gray-500">{row.shopId}</div> },
         { header: 'Shop Name', accessor: 'name', render: (row) => <div className="font-semibold text-gray-900">{row.name}</div> },
         { header: 'Location', accessor: 'district', render: (row) => <div className="text-gray-600 text-sm">{row.district}</div> },
-        { 
-            header: 'Total Stock', 
+        {
+            header: 'Total Stock',
             render: (row) => (
                 <div className="flex-item gap-1 text-xs font-semibold">
                     <span className="badge badge-blue">R: {row.stock?.rice || 0}</span>
                     <span className="badge badge-orange">W: {row.stock?.wheat || 0}</span>
                     <span className="badge badge-green">S: {row.stock?.sugar || 0}</span>
                 </div>
-            ) 
+            )
         },
         { header: 'Users Served', accessor: 'usersServed', render: (row) => <span className="font-semibold text-gray-700">{row.usersServed}</span> },
         {
@@ -165,7 +165,7 @@ const Shops = () => {
                     <div className="modal-container">
                         <div className="modal-header">
                             <h3 className="modal-title">{modalMode === 'add' ? 'Add New Ration Shop' : 'Edit Ration Shop'}</h3>
-                            <button onClick={handleCloseModal} className="modal-close"><LuX size={20}/></button>
+                            <button onClick={handleCloseModal} className="modal-close"><LuX size={20} /></button>
                         </div>
                         <div className="modal-body">
                             <form id="shopForm" onSubmit={handleSubmit} className="flex-col gap-3">
@@ -176,15 +176,15 @@ const Shops = () => {
                                         <div className="flex flex-col gap-1 relative">
                                             <label className="form-label">Shop ID <span className="text-red-500">*</span></label>
                                             <div className="input-icon-wrapper">
-                                                <LuStore  />
-                                                <input type="text" className="form-input" value={formData.shopId} onChange={(e) => setFormData({...formData, shopId: e.target.value})} required disabled={modalMode === 'edit'} placeholder="e.g. SH-1001" />
+                                                <LuStore />
+                                                <input type="text" className="form-input" value={formData.shopId} onChange={(e) => setFormData({ ...formData, shopId: e.target.value })} required disabled={modalMode === 'edit'} placeholder="e.g. SH-1001" />
                                             </div>
                                         </div>
                                         <div className="flex flex-col gap-1 relative">
                                             <label className="form-label">Shop Name <span className="text-red-500">*</span></label>
                                             <div className="input-icon-wrapper">
-                                                <LuStore  />
-                                                <input type="text" className="form-input" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} required placeholder="e.g. Central Fair Price Shop" />
+                                                <LuStore />
+                                                <input type="text" className="form-input" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required placeholder="e.g. Central Fair Price Shop" />
                                             </div>
                                         </div>
                                     </div>
@@ -197,19 +197,42 @@ const Shops = () => {
                                         <div className="flex flex-col gap-1 relative">
                                             <label className="form-label">Owner/Incharge Name</label>
                                             <div className="input-icon-wrapper">
-                                                <LuUser  />
-                                                <input type="text" className="form-input" value={formData.ownerName} onChange={(e) => setFormData({...formData, ownerName: e.target.value})} placeholder="e.g. John Doe" />
+                                                <LuUser />
+                                                <input type="text" className="form-input" value={formData.ownerName} onChange={(e) => setFormData({ ...formData, ownerName: e.target.value })} placeholder="e.g. John Doe" />
                                             </div>
                                         </div>
                                         <div className="flex flex-col gap-1 relative">
                                             <label className="form-label">Contact Number</label>
                                             <div className="input-icon-wrapper">
-                                                <LuPhone  />
-                                                <input type="tel" pattern="[0-9]{10}" title="Ten digit mobile number" className="form-input" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} placeholder="e.g. 9876543210" />
+                                                <LuPhone />
+                                                <input type="tel" pattern="[0-9]{10}" title="Ten digit mobile number" className="form-input" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} placeholder="e.g. 9876543210" />
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+
+                                {/* Login Credentials (Add Only) */}
+                                {modalMode === 'add' && (
+                                    <div>
+                                        <h4 className="modal-section-title">Login Credentials <span className="text-xs text-gray-500 font-normal">(For Shop Dashboard)</span></h4>
+                                        <div className="flex-col gap-2">
+                                            <div className="flex flex-col gap-1 relative">
+                                                <label className="form-label">Email Address <span className="text-red-500">*</span></label>
+                                                <div className="input-icon-wrapper">
+                                                    <LuUser />
+                                                    <input type="email" className="form-input" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} required placeholder="e.g. shop@example.com" />
+                                                </div>
+                                            </div>
+                                            <div className="flex flex-col gap-1 relative">
+                                                <label className="form-label">Password <span className="text-red-500">*</span></label>
+                                                <div className="input-icon-wrapper">
+                                                    <LuUser />
+                                                    <input type="text" className="form-input" value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} required placeholder="e.g. securePass123" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
 
                                 {/* Location Information */}
                                 <div>
@@ -218,19 +241,19 @@ const Shops = () => {
                                         <div className="flex flex-col gap-1 relative">
                                             <label className="form-label">Full Address</label>
                                             <div className="input-icon-wrapper">
-                                                <LuMapPin  />
-                                                <input type="text" className="form-input" value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} placeholder="123 Main Street" />
+                                                <LuMapPin />
+                                                <input type="text" className="form-input" value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} placeholder="123 Main Street" />
                                             </div>
                                         </div>
                                         <div className="flex flex-col gap-1 relative">
                                             <label className="form-label">District <span className="text-red-500">*</span></label>
                                             <div className="input-icon-wrapper">
-                                                <LuMapPin  />
-                                                <input type="text" className="form-input" value={formData.district} onChange={(e) => setFormData({...formData, district: e.target.value})} required placeholder="e.g. Chennai" />
+                                                <LuMapPin />
+                                                <input type="text" className="form-input" value={formData.district} onChange={(e) => setFormData({ ...formData, district: e.target.value })} required placeholder="e.g. Chennai" />
                                             </div>
                                         </div>
                                     </div>
-                                    
+
                                     {/* Geospatial Data Section */}
                                     <div className="mt-4 bg-gray-100 p-4 rounded-xl border border-gray-200">
                                         <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
@@ -239,11 +262,11 @@ const Shops = () => {
                                         <div className="flex-col gap-2">
                                             <div className="flex flex-col gap-1 relative">
                                                 <label className="text-xs font-semibold text-gray-600">Latitude</label>
-                                                <input type="number" step="any" className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none font-mono text-sm" value={formData.latitude} onChange={(e) => setFormData({...formData, latitude: e.target.value})} placeholder="e.g. 13.0827" />
+                                                <input type="number" step="any" className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none font-mono text-sm" value={formData.latitude} onChange={(e) => setFormData({ ...formData, latitude: e.target.value })} placeholder="e.g. 13.0827" />
                                             </div>
                                             <div className="flex flex-col gap-1 relative">
                                                 <label className="text-xs font-semibold text-gray-600">Longitude</label>
-                                                <input type="number" step="any" className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none font-mono text-sm" value={formData.longitude} onChange={(e) => setFormData({...formData, longitude: e.target.value})} placeholder="e.g. 80.2707" />
+                                                <input type="number" step="any" className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none font-mono text-sm" value={formData.longitude} onChange={(e) => setFormData({ ...formData, longitude: e.target.value })} placeholder="e.g. 80.2707" />
                                             </div>
                                         </div>
                                     </div>

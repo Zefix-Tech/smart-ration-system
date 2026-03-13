@@ -20,7 +20,7 @@ const Donations = () => {
     const fetchDonations = async () => {
         setLoading(true);
         try {
-            const token = localStorage.getItem('srms_token');
+            const token = sessionStorage.getItem('srms_token');
             const res = await axios.get(`http://localhost:5001/api/donations?page=${page}&limit=10`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -36,7 +36,7 @@ const Donations = () => {
 
     const fetchOrphanages = async () => {
         try {
-            const token = localStorage.getItem('srms_token');
+            const token = sessionStorage.getItem('srms_token');
             const res = await axios.get('http://localhost:5001/api/admin/orphanages', {
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -61,7 +61,7 @@ const Donations = () => {
         if (!selectedDonation || !selectedOrphanageId) return;
         const loadingToast = toast.loading('Assigning donation...');
         try {
-            const token = localStorage.getItem('srms_token');
+            const token = sessionStorage.getItem('srms_token');
             await axios.post(`http://localhost:5001/api/admin/donations/assign`, {
                 donationId: selectedDonation._id,
                 orphanageId: selectedOrphanageId
@@ -81,7 +81,7 @@ const Donations = () => {
         if (!window.confirm('Mark this donation as successfully distributed to the assigned organization?')) return;
         const loadingToast = toast.loading('Updating distribution status...');
         try {
-            const token = localStorage.getItem('srms_token');
+            const token = sessionStorage.getItem('srms_token');
             await axios.patch(`http://localhost:5001/api/donations/${id}/distribute`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });

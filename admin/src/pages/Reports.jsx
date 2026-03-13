@@ -15,7 +15,7 @@ const Reports = () => {
     useEffect(() => {
         const fetchReports = async () => {
             try {
-                const token = localStorage.getItem('srms_token');
+                const token = sessionStorage.getItem('srms_token');
                 const headers = { Authorization: `Bearer ${token}` };
 
                 const [txRes, compRes, delRes, shopsRes] = await Promise.all([

@@ -78,7 +78,7 @@ const Register = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!formData.shopId) return setError('Please select a ration shop');
-        
+
         setLoading(true);
         setError('');
         try {
@@ -86,7 +86,8 @@ const Register = () => {
             alert('Registration Successful! Please login.');
             navigate('/login');
         } catch (err) {
-            setError(err.response?.data?.message || 'Registration failed');
+            const msg = err.response?.data?.message || err.message || 'Registration failed';
+            setError(msg);
         } finally {
             setLoading(false);
         }
@@ -162,8 +163,8 @@ const Register = () => {
                             {shops.length === 0 ? <p>No shops found in this city</p> : shops.map(shop => {
                                 const isFull = (shop.membersCount || 0) >= 30;
                                 return (
-                                    <div 
-                                        key={shop._id} 
+                                    <div
+                                        key={shop._id}
                                         className={`shop-card ${formData.shopId === shop._id ? 'selected' : ''} ${isFull ? 'full' : ''}`}
                                         onClick={() => !isFull && setFormData({ ...formData, shopId: shop._id })}
                                     >

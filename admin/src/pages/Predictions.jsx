@@ -12,7 +12,7 @@ const Predictions = () => {
     const runModel = async () => {
         setLoading(true);
         try {
-            const token = localStorage.getItem('srms_token');
+            const token = sessionStorage.getItem('srms_token');
             const res = await axios.post('http://localhost:5001/api/admin/run-stock-prediction', {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });

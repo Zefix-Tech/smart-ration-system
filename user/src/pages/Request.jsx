@@ -26,7 +26,7 @@ const RequestRation = () => {
 
     const checkRequestStatus = async () => {
         try {
-            const token = localStorage.getItem('srms_user_token');
+            const token = sessionStorage.getItem('srms_user_token');
             const res = await axios.get('http://localhost:5001/api/user-portal/check-request-status', {
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -44,7 +44,7 @@ const RequestRation = () => {
         setMessage({ type: '', text: '' });
 
         try {
-            const token = localStorage.getItem('srms_user_token');
+            const token = sessionStorage.getItem('srms_user_token');
             await axios.post('http://localhost:5001/api/user-portal/request-ration', 
                 {}, // Backend calculates this now
                 { headers: { Authorization: `Bearer ${token}` } }

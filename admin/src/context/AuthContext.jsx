@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         const checkAuth = async () => {
-            const token = localStorage.getItem('srms_token');
+            const token = sessionStorage.getItem('srms_token');
             if (token) {
                 try {
                     const res = await axios.get('http://localhost:5001/api/auth/verify', {
@@ -20,10 +20,10 @@ export const AuthProvider = ({ children }) => {
                     if (res.data.valid) {
                         setAdmin(res.data.admin);
                     } else {
-                        localStorage.removeItem('srms_token');
+                        sessionStorage.removeItem('srms_token');
                     }
                 } catch (err) {
-                    localStorage.removeItem('srms_token');
+                    sessionStorage.removeItem('srms_token');
                 }
             }
             setLoading(false);
@@ -32,12 +32,12 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const login = (token, adminData) => {
-        localStorage.setItem('srms_token', token);
+        sessionStorage.setItem('srms_token', token);
         setAdmin(adminData);
     };
 
     const logout = () => {
-        localStorage.removeItem('srms_token');
+        sessionStorage.removeItem('srms_token');
         setAdmin(null);
     };
 

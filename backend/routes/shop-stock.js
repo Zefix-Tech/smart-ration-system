@@ -50,6 +50,27 @@ router.patch('/update/:shopId', async (req, res) => {
     }
 });
 
+// Add (increment) stock for a shop
+router.patch('/add/:shopId', async (req, res) => {
+    try {
+        const { rice, wheat, sugar, kerosene } = req.body;
+        const shop = await Shop.findById(req.params.shopId);
+        if (!shop) return res.status(404).json({ message: 'Shop not found' });
+
+        if (rice) shop.stock.rice = (shop.stock.rice || 0) + parseInt(rice);
+        if (wheat) shop.stock.wheat = (shop.stock.wheat || 0) + parseInt(wheat);
+        if (sugar) shop.stock.sugar = (shop.stock.sugar || 0) + parseInt(sugar);
+        if (kerosene) shop.stock.kerosene = (shop.stock.kerosene || 0) + parseInt(kerosene);
+
+        shop.markModified('stock');
+        await shop.save();
+
+        res.json({ message: 'Stock added successfully', stock: shop.stock });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
 // Get stock history for a shop
 router.get('/history/:shopId', async (req, res) => {
     try {

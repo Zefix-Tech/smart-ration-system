@@ -11,7 +11,7 @@ const AuditLogs = () => {
     const fetchLogs = async () => {
         setLoading(true);
         try {
-            const token = localStorage.getItem('srms_token');
+            const token = sessionStorage.getItem('srms_token');
             const res = await axios.get('http://localhost:5001/api/audit', {
                 headers: { Authorization: `Bearer ${token}` }
             });

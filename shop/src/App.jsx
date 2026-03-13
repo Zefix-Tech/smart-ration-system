@@ -10,14 +10,18 @@ import Complaints from './pages/Complaints';
 import Distribution from './pages/Distribution';
 import Notifications from './pages/Notifications';
 import Reports from './pages/Reports';
+import DeliveryTeam from './pages/DeliveryTeam';
 
 const ProtectedRoute = ({ children }) => {
     const { admin, loading } = useAuth();
-    
+
     if (loading) return <div className="h-screen flex items-center justify-center bg-gray-50 text-gray-500 font-medium tracking-wide">Initializing Shop Portal...</div>;
-    
+
     if (!admin) return <Navigate to="/login" replace />;
-    
+
+    // Allow both shop admins and delivery persons
+    if (!['shopadmin', 'deliveryman'].includes(admin.role)) return <Navigate to="/login" replace />;
+
     return children;
 };
 
@@ -37,6 +41,7 @@ const AppRoutes = () => {
                 <Route path="/stock" element={<Stock />} />
                 <Route path="/purchases" element={<Purchases />} />
                 <Route path="/delivery" element={<Delivery />} />
+                <Route path="/delivery-team" element={<DeliveryTeam />} />
                 <Route path="/complaints" element={<Complaints />} />
                 <Route path="/distribution" element={<Distribution />} />
                 <Route path="/notifications" element={<Notifications />} />

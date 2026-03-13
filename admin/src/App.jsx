@@ -18,15 +18,16 @@ import Notifications from './pages/Notifications';
 import Reports from './pages/Reports';
 import AuditLogs from './pages/AuditLogs';
 import MapView from './pages/MapView';
+import RationRecords from './pages/RationRecords';
 
 const ProtectedRoute = ({ children }) => {
     const { admin, loading } = useAuth();
     if (loading) return <div className="h-screen flex items-center justify-center bg-gray-50 text-gray-500 font-medium tracking-wide">Loading System...</div>;
-    
+
     // Check if logged in AND is super admin
     if (!admin) return <Navigate to="/login" replace />;
     if (admin.role !== 'superadmin') return <div className="h-screen flex items-center justify-center bg-gray-50 text-red-500 font-bold p-10 text-center">Access Denied: Only Super Admin can access this dashboard.</div>;
-    
+
     return children;
 };
 
@@ -56,6 +57,7 @@ const AppRoutes = () => {
                 <Route path="/reports" element={<Reports />} />
                 <Route path="/map" element={<MapView />} />
                 <Route path="/audit" element={<AuditLogs />} />
+                <Route path="/ration-records" element={<RationRecords />} />
                 {/* other routes will map here */}
                 <Route path="*" element={<div className="p-10 text-center text-gray-500 text-lg">Page under construction</div>} />
             </Route>

@@ -53,7 +53,7 @@ const Dashboard = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const token = localStorage.getItem('srms_token');
+                const token = sessionStorage.getItem('srms_token');
                 const config = { headers: { Authorization: `Bearer ${token}` } };
 
                 const [statsRes, distRes, growthRes, usageRes] = await Promise.all([

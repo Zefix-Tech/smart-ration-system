@@ -10,7 +10,7 @@ const PurchaseHistory = () => {
     useEffect(() => {
         const fetchHistory = async () => {
             try {
-                const token = localStorage.getItem('srms_user_token');
+                const token = sessionStorage.getItem('srms_user_token');
                 const res = await axios.get('http://localhost:5001/api/user-portal/history', {
                     headers: { Authorization: `Bearer ${token}` }
                 });

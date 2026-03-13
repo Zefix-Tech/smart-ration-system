@@ -13,7 +13,7 @@ const Distribution = () => {
     const fetchDistributions = async () => {
         setLoading(true);
         try {
-            const token = localStorage.getItem('srms_shop_token');
+            const token = sessionStorage.getItem('srms_shop_token');
             const res = await axios.get(`http://localhost:5001/api/shop/distributions`, {
                 headers: { Authorization: `Bearer ${token}` }
             });

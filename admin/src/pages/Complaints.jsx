@@ -19,7 +19,7 @@ const Complaints = () => {
     const fetchComplaints = async () => {
         setLoading(true);
         try {
-            const token = localStorage.getItem('srms_token');
+            const token = sessionStorage.getItem('srms_token');
             const res = await axios.get(`http://localhost:5001/api/complaints?page=${page}&limit=10`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -53,7 +53,7 @@ const Complaints = () => {
         
         const loadingToast = toast.loading('Sending reply...');
         try {
-            const token = localStorage.getItem('srms_token');
+            const token = sessionStorage.getItem('srms_token');
             await axios.patch(`http://localhost:5001/api/complaints/${selectedComplaint._id}`, { adminResponse: replyText, status: 'in_progress' }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -70,7 +70,7 @@ const Complaints = () => {
         if (!window.confirm('Mark this complaint as resolved?')) return;
         const loadingToast = toast.loading('Resolving complaint...');
         try {
-            const token = localStorage.getItem('srms_token');
+            const token = sessionStorage.getItem('srms_token');
             await axios.patch(`http://localhost:5001/api/complaints/${id}`, { status: 'resolved' }, {
                 headers: { Authorization: `Bearer ${token}` }
             });

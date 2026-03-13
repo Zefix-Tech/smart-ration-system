@@ -45,3 +45,6 @@ _screenshots_/
 # System files
 .DS_Store
 Thumbs.db
+
+
+.env

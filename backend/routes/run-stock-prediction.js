@@ -54,7 +54,7 @@ router.post('/', async (req, res) => {
             });
             mlResponse = response.data;
         } catch (mlErr) {
-            console.error("ML service error:", mlErr.message);
+            console.warn("⚠️  ML service not reachable (localhost:6000) — using fallback predictions. Start ml-service/app.py to enable AI predictions.");
             mlResponse = {
                 predicted_rice_demand: 48500,
                 predicted_wheat_demand: 34000,

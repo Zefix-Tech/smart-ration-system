@@ -16,7 +16,7 @@ const Complaints = () => {
 
     const fetchComplaints = async () => {
         try {
-            const token = localStorage.getItem('srms_user_token');
+            const token = sessionStorage.getItem('srms_user_token');
             const res = await axios.get('http://localhost:5001/api/user-portal/complaints', {
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -34,7 +34,7 @@ const Complaints = () => {
         setMessage('');
 
         try {
-            const token = localStorage.getItem('srms_user_token');
+            const token = sessionStorage.getItem('srms_user_token');
             await axios.post('http://localhost:5001/api/user-portal/complaints', formData, {
                 headers: { Authorization: `Bearer ${token}` }
             });

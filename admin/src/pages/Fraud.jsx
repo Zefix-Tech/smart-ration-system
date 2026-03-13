@@ -14,7 +14,7 @@ const Fraud = () => {
     const fetchAlerts = async () => {
         setLoading(true);
         try {
-            const token = localStorage.getItem('srms_token');
+            const token = sessionStorage.getItem('srms_token');
             const res = await axios.get(`http://localhost:5001/api/fraud?page=${page}&limit=10`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -37,7 +37,7 @@ const Fraud = () => {
         if (!window.confirm(`Are you sure you want to ${actionName}?`)) return;
 
         try {
-            const token = localStorage.getItem('srms_token');
+            const token = sessionStorage.getItem('srms_token');
             await axios.patch(`http://localhost:5001/api/fraud/${id}`, { status }, {
                 headers: { Authorization: `Bearer ${token}` }
             });

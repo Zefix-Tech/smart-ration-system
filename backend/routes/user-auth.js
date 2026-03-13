@@ -3,42 +3,75 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Shop = require('../models/Shop');
+const RationCardRecord = require('../models/RationCardRecord');
 const router = express.Router();
 
 // Register User
 router.post('/register', async (req, res) => {
     try {
-        const { name, aadhaar, rationCard, phone, address, password, cityId, shopId } = req.body;
+        const { name, aadhaar, rationCard, phone, address, password, cityId } = req.body;
+        const shopId = req.body.shopId && req.body.shopId !== '' ? req.body.shopId : undefined;
 
-        // Validation
+        // Aadhaar format check
         if (!/^\d{12}$/.test(aadhaar)) {
             return res.status(400).json({ message: 'Invalid Aadhaar Number (must be 12 digits)' });
         }
 
-        const existingUser = await User.findOne({ $or: [{ rationCard }, { aadhaar }, { phone }] });
-        if (existingUser) {
-            return res.status(400).json({ message: 'User with this Aadhaar, Ration Card, or Phone already exists' });
+        // ─── Step 1: Validate against Government Ration Card Record ───
+        const govRecord = await RationCardRecord.findOne({ rationCardNumber: rationCard });
+        if (!govRecord) {
+            return res.status(400).json({ message: 'Ration card not found in government database. Please contact your local office.' });
+        }
+        if (govRecord.isRegistered) {
+            return res.status(400).json({ message: 'A user account already exists for this ration card number.' });
         }
 
-        // Check Shop Capacity
+        // Check if the entered Aadhaar belongs to any family member in that record
+        const memberMatch = govRecord.members.find(m => m.aadhaar === aadhaar);
+        if (!memberMatch) {
+            return res.status(400).json({ message: 'Aadhaar number does not match any family member on this ration card.' });
+        }
+        // ─────────────────────────────────────────────────────────────
+
+        // Step 2: Uniqueness check (phone)
+        const existingUser = await User.findOne({ $or: [{ phone }] });
+        if (existingUser) {
+            return res.status(400).json({ message: 'An account with this phone number already exists.' });
+        }
+
+        // Step 3: Check Shop Capacity
         if (shopId) {
             const shop = await Shop.findById(shopId);
             if (!shop) return res.status(404).json({ message: 'Shop not found' });
             if (shop.membersCount >= 30) {
-                return res.status(400).json({ message: 'This shop is already full (Max 30 members)' });
+                return res.status(400).json({ message: 'This shop is already at full capacity (Max 30 members)' });
             }
-            
-            // Increment membership
             shop.membersCount += 1;
             await shop.save();
         }
 
+        // Step 4: Create user — auto-fill from government record
         const hashedPw = await bcrypt.hash(password, 10);
         const user = new User({
-            name, aadhaar, rationCard, phone, address, password: hashedPw, cityId, shopId, role: 'user'
+            name,
+            aadhaar,
+            rationCard,
+            phone,
+            address,
+            password: hashedPw,
+            cityId,
+            shopId,
+            role: 'user',
+            familyMembers: govRecord.members.length, // auto from record
+            category: govRecord.category,            // auto from record
+            district: govRecord.district             // auto from record
         });
-
         await user.save();
+
+        // Step 5: Mark government record as registered
+        govRecord.isRegistered = true;
+        await govRecord.save();
+
         res.status(201).json({ success: true, message: 'Registration successful' });
     } catch (err) {
         res.status(500).json({ message: err.message });
@@ -46,6 +79,7 @@ router.post('/register', async (req, res) => {
 });
 
 // Login User
+
 router.post('/login', async (req, res) => {
     try {
         const { phone, password } = req.body;

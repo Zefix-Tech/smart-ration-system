@@ -12,7 +12,7 @@ const Eligibility = () => {
     const fetchRequests = async () => {
         setLoading(true);
         try {
-            const token = localStorage.getItem('srms_token');
+            const token = sessionStorage.getItem('srms_token');
             const res = await axios.get('http://localhost:5001/api/eligibility/admin/requests?status=PENDING', {
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -34,7 +34,7 @@ const Eligibility = () => {
         
         const loadingToast = toast.loading(`Marking as ${status}...`);
         try {
-            const token = localStorage.getItem('srms_token');
+            const token = sessionStorage.getItem('srms_token');
             await axios.put(`http://localhost:5001/api/eligibility/admin/verify/${id}`, { status }, {
                 headers: { Authorization: `Bearer ${token}` }
             });

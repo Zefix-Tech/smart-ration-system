@@ -207,4 +207,79 @@ router.post('/alerts/send', async (req, res) => {
     }
 });
 
+// 9. Dashboard Statistics
+// GET /api/shop/dashboard-stats
+router.get('/dashboard-stats', async (req, res) => {
+    try {
+        const User = require('../models/User');
+        const Shop = require('../models/Shop');
+        const now = new Date();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+
+        // 1. Core Counts
+        const totalUsers = await User.countDocuments({ shopId: req.shopId });
+        const monthlyPurchases = await Order.countDocuments({
+            shop: req.shopId,
+            status: 'completed',
+            updatedAt: { $gte: startOfMonth, $lte: endOfMonth }
+        });
+
+        // 2. Stock Levels
+        const shop = await Shop.findById(req.shopId).select('stock');
+
+        // 3. Distribution History (Last 7 Days)
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(now.getDate() - 7);
+        sevenDaysAgo.setHours(0, 0, 0, 0);
+
+        const distributionHistory = await Order.aggregate([
+            {
+                $match: {
+                    shop: req.shopId,
+                    status: 'completed',
+                    updatedAt: { $gte: sevenDaysAgo }
+                }
+            },
+            {
+                $group: {
+                    _id: { $dateToString: { format: "%Y-%m-%d", date: "$updatedAt" } },
+                    count: { $sum: 1 }
+                }
+            },
+            { $sort: { "_id": 1 } }
+        ]);
+
+        // Transform distribution history into a contiguous 7-day array
+        const weekData = [];
+        for (let i = 6; i >= 0; i--) {
+            const d = new Date();
+            d.setDate(now.getDate() - i);
+            const dateStr = d.toISOString().split('T')[0];
+            const match = distributionHistory.find(h => h._id === dateStr);
+            weekData.push({
+                date: d.toLocaleDateString('en-US', { weekday: 'short' }),
+                count: match ? match.count : 0
+            });
+        }
+
+        res.json({
+            stats: {
+                totalUsers,
+                monthlyPurchases,
+                pendingUsers: Math.max(0, totalUsers - monthlyPurchases),
+                completionRate: totalUsers > 0 ? Math.round((monthlyPurchases / totalUsers) * 100) : 0
+            },
+            stock: shop?.stock || {},
+            history: weekData
+        });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+// Delivery team management (sub-router reuses getShop via router.use above)
+const deliveryTeamRouter = require('./delivery-team');
+router.use('/delivery-team', deliveryTeamRouter);
+
 module.exports = router;

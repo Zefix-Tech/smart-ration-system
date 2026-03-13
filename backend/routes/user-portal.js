@@ -157,16 +157,42 @@ router.get('/history', async (req, res) => {
 router.post('/request-delivery', async (req, res) => {
     try {
         const { reason, description, certificateUrl, address } = req.body;
+        
+        // 1. Fetch complete user data to check eligibility and shopId
+        const user = await User.findById(req.user.id);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        if (user.eligibilityStatus !== 'VERIFIED') {
+            return res.status(403).json({ 
+                message: 'Access Denied: Your home delivery eligibility has not been verified yet by an admin.' 
+            });
+        }
+
+        // 2. Find the user's latest pending order to link
+        const latestPendingOrder = await Order.findOne({ 
+            user: req.user.id, 
+            status: 'pending' 
+        }).sort({ createdAt: -1 });
+
+        if (!latestPendingOrder) {
+            return res.status(400).json({ 
+                message: 'No pending ration purchase found. Please request your ration first.' 
+            });
+        }
+
         const delivery = new DeliveryRequest({
             user: req.user.id,
             reason,
             description,
             certificateUrl,
-            address,
-            status: 'pending'
+            address: address || user.address,
+            status: 'pending',
+            shop: user.shopId, // Link to shop
+            order: latestPendingOrder._id // Link to order
         });
+        
         await delivery.save();
-        res.json({ success: true, message: 'Delivery request submitted' });
+        res.json({ success: true, message: 'Delivery request submitted successfully and sent to your local shop.' });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
@@ -176,8 +202,10 @@ router.post('/request-delivery', async (req, res) => {
 router.post('/complaints', async (req, res) => {
     try {
         const { subject, message, category } = req.body;
+        const user = await User.findById(req.user.id);
         const complaint = new Complaint({
             user: req.user.id,
+            shop: user?.shopId || null,
             subject,
             message,
             category,

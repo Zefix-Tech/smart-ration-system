@@ -1,8 +1,8 @@
 import { NavLink } from 'react-router-dom';
-import { 
-    LayoutDashboard, Users, Store, Package, Truck, 
-    MessageSquare, ShieldAlert, BrainCircuit, HeartHandshake, 
-    Bell, FileText, LogOut, History, Map, ClipboardCheck 
+import {
+    LayoutDashboard, Users, Store, Package, Truck,
+    MessageSquare, ShieldAlert, BrainCircuit, HeartHandshake,
+    Bell, FileText, History, Map, ClipboardCheck, ShieldCheck
 } from 'lucide-react';
 import '../styles/sidebar.css';
 
@@ -22,6 +22,8 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
         { path: '/reports', name: 'Reports & Analytics', icon: <FileText /> },
         { path: '/map', name: 'Ration Shop Map', icon: <Map /> },
         { path: '/audit', name: 'System Audit Logs', icon: <History /> },
+        { path: '/ration-records', name: 'Ration Card Records', icon: <ShieldCheck /> },
+
     ];
 
     return (

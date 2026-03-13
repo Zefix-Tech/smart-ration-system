@@ -9,8 +9,11 @@ const orderSchema = new mongoose.Schema({
         unit: { type: String, default: 'kg' }
     }],
     totalAmount: { type: Number, default: 0 },
-    status: { type: String, enum: ['completed', 'pending', 'cancelled', 'approved'], default: 'pending' },
-    purchaseDate: { type: Date, default: Date.now }
+    status: { type: String, enum: ['completed', 'pending', 'cancelled', 'approved', 'out_for_delivery', 'delivered'], default: 'pending' },
+    purchaseDate: { type: Date, default: Date.now },
+    otp: { type: String, default: null },
+    otpExpiry: { type: Date, default: null },
+    deliveredBy: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin', default: null }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Order', orderSchema);

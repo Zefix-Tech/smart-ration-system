@@ -19,7 +19,7 @@ const Notifications = () => {
     const fetchNotifications = async () => {
         setLoading(true);
         try {
-            const token = localStorage.getItem('srms_token');
+            const token = sessionStorage.getItem('srms_token');
             const res = await axios.get('http://localhost:5001/api/notifications', {
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -47,7 +47,7 @@ const Notifications = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const token = localStorage.getItem('srms_token');
+            const token = sessionStorage.getItem('srms_token');
             await axios.post('http://localhost:5001/api/notifications',
                 { title, message, type, priority, targetAudience },
                 { headers: { Authorization: `Bearer ${token}` } }
@@ -63,7 +63,7 @@ const Notifications = () => {
     const handleDelete = async (id) => {
         if (!window.confirm('Delete this notification?')) return;
         try {
-            const token = localStorage.getItem('srms_token');
+            const token = sessionStorage.getItem('srms_token');
             await axios.delete(`http://localhost:5001/api/notifications/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });

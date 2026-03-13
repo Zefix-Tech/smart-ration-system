@@ -16,6 +16,7 @@
         flex-direction: column;
         align-items: flex-start;
     }
+
     .page-title {
         font-size: 1.25rem;
     }
@@ -270,23 +271,17 @@
 }
 
 .alert-card {
-    background-color: #fef2f2;
     padding: 1rem;
     border-radius: 0.75rem;
-    border: 1px solid #fee2e2;
+    border: 1px solid transparent;
     box-shadow: var(--shadow-sm);
     transition: border-color 0.2s;
     position: relative;
     overflow: hidden;
 }
 
-.alert-card:hover {
-    border-color: #fca5a5;
-}
-
 .alert-card-title {
     font-weight: 700;
-    color: #991b1b;
     text-transform: capitalize;
     margin-bottom: 0.25rem;
     font-size: 1.125rem;
@@ -302,26 +297,142 @@
 .alert-pct {
     font-size: 0.875rem;
     font-weight: 600;
-    color: #dc2626;
 }
 
 .alert-qty {
     font-size: 0.75rem;
-    color: #ef4444;
     font-weight: 500;
 }
 
 .progress-track {
     width: 100%;
-    background-color: #fecaca;
     border-radius: 9999px;
     height: 0.5rem;
 }
 
 .progress-fill {
-    background-color: #ef4444;
     height: 0.5rem;
     border-radius: 9999px;
+}
+
+/* Critical (Red) */
+.alert-card-critical {
+    background-color: #fef2f2;
+    border-color: #fee2e2;
+}
+
+.alert-card-critical:hover {
+    border-color: #fca5a5;
+}
+
+.alert-card-critical .alert-card-title {
+    color: #991b1b;
+}
+
+.alert-card-critical .alert-pct {
+    color: #dc2626;
+}
+
+.alert-card-critical .alert-qty {
+    color: #ef4444;
+}
+
+.alert-card-critical .progress-track {
+    background-color: #fecaca;
+}
+
+.alert-card-critical .progress-fill {
+    background-color: #ef4444;
+}
+
+/* Warning (Orange) */
+.alert-card-warning {
+    background-color: #fff7ed;
+    border-color: #ffedd5;
+}
+
+.alert-card-warning:hover {
+    border-color: #fdba74;
+}
+
+.alert-card-warning .alert-card-title {
+    color: #9a3412;
+}
+
+.alert-card-warning .alert-pct {
+    color: #ea580c;
+}
+
+.alert-card-warning .alert-qty {
+    color: #f97316;
+}
+
+.alert-card-warning .progress-track {
+    background-color: #fed7aa;
+}
+
+.alert-card-warning .progress-fill {
+    background-color: #f97316;
+}
+
+/* Caution (Yellow) */
+.alert-card-caution {
+    background-color: #fefce8;
+    border-color: #fef08a;
+}
+
+.alert-card-caution:hover {
+    border-color: #fde047;
+}
+
+.alert-card-caution .alert-card-title {
+    color: #854d0e;
+}
+
+.alert-card-caution .alert-pct {
+    color: #ca8a04;
+}
+
+.alert-card-caution .alert-qty {
+    color: #eab308;
+}
+
+.alert-card-caution .progress-track {
+    background-color: #fef08a;
+}
+
+.alert-card-caution .progress-fill {
+    background-color: #eab308;
+}
+
+/* Success (Green) */
+.alert-card-success {
+    background-color: #f0fdf4;
+    border-color: #bbf7d0;
+}
+
+.alert-card-success:hover {
+    border-color: #86efac;
+}
+
+.alert-card-success .alert-card-title {
+    color: #166534;
+}
+
+.alert-card-success .alert-pct {
+    color: #15803d;
+}
+
+.alert-card-success .alert-qty {
+    color: #22c55e;
+}
+
+.alert-card-success .progress-track {
+    background-color: #bbf7d0;
+}
+
+.alert-card-success .progress-fill {
+    background-color: #22c55e;
 }
 
 /* Delivery Specifics */
@@ -864,6 +975,7 @@
     transform: none;
     box-shadow: var(--shadow-sm);
 }
+
 /* Modal Standard Components */
 .modal-overlay {
     position: fixed;
@@ -894,8 +1006,15 @@
 }
 
 @keyframes modalSlideIn {
-    from { opacity: 0; transform: translateY(1rem) scale(0.95); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
+    from {
+        opacity: 0;
+        transform: translateY(1rem) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
 
 .modal-header {
@@ -977,12 +1096,12 @@
     align-items: center;
 }
 
-.input-icon-wrapper > svg {
+.input-icon-wrapper>svg {
     position: absolute;
     left: 0.875rem;
     color: #9ca3af;
 }
 
-.input-icon-wrapper > .form-input {
+.input-icon-wrapper>.form-input {
     padding-left: 2.5rem;
 }

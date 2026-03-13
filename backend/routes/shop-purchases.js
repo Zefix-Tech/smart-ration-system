@@ -17,6 +17,8 @@ router.get('/:shopId', async (req, res) => {
     }
 });
 
+const { deductStock } = require('../utils/stockUtils');
+
 // Update order status (Approve/Reject/Complete)
 router.patch('/update/:orderId', async (req, res) => {
     try {
@@ -25,14 +27,8 @@ router.patch('/update/:orderId', async (req, res) => {
         if (!order) return res.status(404).json({ message: 'Order not found' });
 
         if (status === 'completed' && order.status !== 'completed') {
-            // Reduce stock automatically
-            const shop = await Shop.findById(order.shop._id);
-            order.items.forEach(item => {
-                if (shop.stock[item.commodity] !== undefined) {
-                    shop.stock[item.commodity] -= item.quantity;
-                }
-            });
-            await shop.save();
+            // Deduct stock using central utility
+            await deductStock(order.shop._id, order.items);
 
             // Update user last purchase date
             await User.findByIdAndUpdate(order.user, { lastPurchaseDate: new Date() });

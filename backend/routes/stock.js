@@ -34,7 +34,7 @@ router.get('/trends', async (req, res) => {
 router.get('/alerts', async (req, res) => {
     try {
         const stocks = await Stock.find({ year: 2026, month: 3 });
-        const alerts = stocks.filter(s => s.remaining < s.totalQuantity * 0.2).map(s => ({
+        const alerts = stocks.map(s => ({
             commodity: s.commodity,
             remaining: s.remaining,
             total: s.totalQuantity,

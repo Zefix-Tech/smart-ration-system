@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema({
     status: { type: String, enum: ['active', 'suspended', 'inactive'], default: 'active' },
     avatar: { type: String, default: '' },
     lastPurchaseDate: { type: Date, default: null },
-    eligibilityType: { type: String, enum: ['Pregnant Woman', 'Senior Citizen (60+)', 'Permanently Disabled', 'Medical Condition', 'None'], default: 'None' },
+    eligibilityType: { type: String, enum: ['Pregnant Woman', 'Senior Citizen (60+)', 'Permanently Disabled', 'Medical Condition', 'Osteogenesis Imperfecta (Bones)', 'None'], default: 'None' },
     eligibilityReason: { type: String, default: '' },
     eligibilityDocumentUrl: { type: String, default: '' },
     eligibilityStatus: { type: String, enum: ['NONE', 'PENDING', 'VERIFIED', 'REJECTED'], default: 'NONE' },

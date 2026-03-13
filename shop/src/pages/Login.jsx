@@ -22,7 +22,7 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
-        
+
         if (captcha.toUpperCase() !== captchaVal) {
             setError('Invalid CAPTCHA code');
             return;
@@ -42,7 +42,11 @@ const Login = () => {
     return (
         <div className="login-wrapper">
             <div className="gov-branding">
-                <img src="/emblem.png" alt="Emblem" className="gov-emblem" />
+                <img
+                    src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg"
+                    alt="Emblem of India"
+                    className="gov-emblem"
+                />
                 <div className="gov-text">
                     <p className="gov-title">Government of India</p>
                     <p className="gov-dept">Smart Ration Management Portal</p>
@@ -58,17 +62,17 @@ const Login = () => {
 
                 <form onSubmit={handleSubmit} className="login-form">
                     {error && <div className="error-alert">{error}</div>}
-                    
+
                     <div className="form-group-gov">
                         <label className="label-gov">Administrator Email</label>
                         <div className="input-wrapper">
                             <Mail size={18} />
-                            <input 
-                                type="email" 
-                                required 
-                                value={email} 
+                            <input
+                                type="email"
+                                required
+                                value={email}
                                 onChange={e => setEmail(e.target.value)}
-                                className="input-gov" 
+                                className="input-gov"
                                 placeholder="admin@shop.gov.in"
                             />
                         </div>
@@ -78,12 +82,12 @@ const Login = () => {
                         <label className="label-gov">Security Password</label>
                         <div className="input-wrapper">
                             <Lock size={18} />
-                            <input 
-                                type="password" 
-                                required 
-                                value={password} 
+                            <input
+                                type="password"
+                                required
+                                value={password}
                                 onChange={e => setPassword(e.target.value)}
-                                className="input-gov" 
+                                className="input-gov"
                                 placeholder="••••••••"
                             />
                         </div>
@@ -96,12 +100,12 @@ const Login = () => {
                             <button type="button" onClick={refreshCaptcha} className="refresh-btn">
                                 <RefreshCw size={18} />
                             </button>
-                            <input 
-                                type="text" 
-                                required 
-                                value={captcha} 
+                            <input
+                                type="text"
+                                required
+                                value={captcha}
                                 onChange={e => setCaptcha(e.target.value)}
-                                className="input-gov" 
+                                className="input-gov"
                                 style={{ flex: 1 }}
                                 placeholder="Code"
                             />

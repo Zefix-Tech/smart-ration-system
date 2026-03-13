@@ -22,7 +22,7 @@ const DonateRation = () => {
 
     const fetchPreference = async () => {
         try {
-            const token = localStorage.getItem('srms_user_token');
+            const token = sessionStorage.getItem('srms_user_token');
             const res = await axios.get('http://localhost:5001/api/user-portal/ration-preference', {
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -36,7 +36,7 @@ const DonateRation = () => {
 
     const checkPurchaseStatus = async () => {
         try {
-            const token = localStorage.getItem('srms_user_token');
+            const token = sessionStorage.getItem('srms_user_token');
             const res = await axios.get('http://localhost:5001/api/user-portal/history', {
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -64,7 +64,7 @@ const DonateRation = () => {
         setUpdating(true);
         setMessage('');
         try {
-            const token = localStorage.getItem('srms_user_token');
+            const token = sessionStorage.getItem('srms_user_token');
             const res = await axios.post('http://localhost:5001/api/user-portal/ration-preference', 
             { status },
             { headers: { Authorization: `Bearer ${token}` } }

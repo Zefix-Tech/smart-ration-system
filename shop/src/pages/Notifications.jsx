@@ -15,7 +15,7 @@ const Notifications = () => {
     const fetchPendingUsers = async () => {
         setLoading(true);
         try {
-            const token = localStorage.getItem('srms_shop_token');
+            const token = sessionStorage.getItem('srms_shop_token');
             const res = await axios.get(`http://localhost:5001/api/shop/notifications`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -43,7 +43,7 @@ const Notifications = () => {
         if (selectedUsers.length === 0) return alert('Select at least one user');
         setSending(true);
         try {
-            const token = localStorage.getItem('srms_shop_token');
+            const token = sessionStorage.getItem('srms_shop_token');
             await axios.post(`http://localhost:5001/api/shop-notifications/broadcast`, 
                 { 
                     userIds: selectedUsers,
