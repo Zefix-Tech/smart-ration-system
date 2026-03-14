@@ -68,10 +68,10 @@ router.post('/', async (req, res) => {
 // PUT /api/ration-records/:id — update a record
 router.put('/:id', async (req, res) => {
     try {
-        const { category, address, district, assignedShop, members, isRegistered } = req.body;
+        const { category, address, district, assignedShop, members, registered } = req.body;
         const record = await RationCardRecord.findByIdAndUpdate(
             req.params.id,
-            { category, address, district, assignedShop: assignedShop || null, members, isRegistered },
+            { category, address, district, assignedShop: assignedShop || null, members, registered },
             { new: true, runValidators: true }
         );
         if (!record) return res.status(404).json({ message: 'Record not found' });
@@ -86,7 +86,7 @@ router.delete('/:id', async (req, res) => {
     try {
         const record = await RationCardRecord.findById(req.params.id);
         if (!record) return res.status(404).json({ message: 'Record not found' });
-        if (record.isRegistered) return res.status(400).json({ message: 'Cannot delete a record that has a registered user account' });
+        if (record.registered) return res.status(400).json({ message: 'Cannot delete a record that has a registered user account' });
         await record.deleteOne();
         res.json({ message: 'Record deleted' });
     } catch (err) {

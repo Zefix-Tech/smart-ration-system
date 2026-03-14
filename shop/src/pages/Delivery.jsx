@@ -20,7 +20,7 @@ const Delivery = () => {
     const fetchRequests = async () => {
         setLoading(true);
         try {
-            const res = await axios.get('http://localhost:5001/api/shop/delivery-requests', {
+            const res = await axios.get('/api/shop/delivery-requests', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setRequests(res.data);
@@ -37,7 +37,7 @@ const Delivery = () => {
 
     const handleAction = async (id, status) => {
         try {
-            await axios.patch(`http://localhost:5001/api/shop-delivery/update/${id}`,
+            await axios.patch(`/api/shop-delivery/update/${id}`,
                 { status },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -51,7 +51,7 @@ const Delivery = () => {
     const handleDispatch = async (deliveryId) => {
         setProcessing(true);
         try {
-            await axios.post(`http://localhost:5001/api/shop-delivery/dispatch/${deliveryId}`, {}, {
+            await axios.post(`/api/shop-delivery/dispatch/${deliveryId}`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             toast.success(`Delivery dispatched successfully!`); 
@@ -66,7 +66,7 @@ const Delivery = () => {
     const handleGenerateOtp = async (deliveryId) => {
         setProcessing(true);
         try {
-            const res = await axios.post(`http://localhost:5001/api/shop-delivery/generate-otp/${deliveryId}`, {}, {
+            const res = await axios.post(`/api/shop-delivery/generate-otp/${deliveryId}`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             toast.success(`OTP generated and sent to citizen successfully!`); 
@@ -85,7 +85,7 @@ const Delivery = () => {
         }
         setProcessing(true);
         try {
-            await axios.post(`http://localhost:5001/api/shop-delivery/verify-otp/${otpModal.deliveryId}`,
+            await axios.post(`/api/shop-delivery/verify-otp/${otpModal.deliveryId}`,
                 { otp: otpInput, deliveryPersonId: admin?.id },
                 { headers: { Authorization: `Bearer ${token}` } }
             );

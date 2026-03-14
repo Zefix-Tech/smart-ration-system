@@ -10,12 +10,12 @@ const memberSchema = new mongoose.Schema({
 
 const rationCardRecordSchema = new mongoose.Schema({
     rationCardNumber: { type: String, required: true, unique: true, index: true },
-    category: { type: String, enum: ['AAY', 'PHH', 'NPHH', 'AY'], default: 'PHH' },
+    category: { type: String, enum: ['AAY', 'PHH', 'NPHH'], default: 'PHH' },
     address: { type: String, required: true },
     district: { type: String, required: true },
     assignedShop: { type: mongoose.Schema.Types.ObjectId, ref: 'Shop', default: null },
     members: [memberSchema],
-    isRegistered: { type: Boolean, default: false } // true once a user account is created from this record
+    registered: { type: Boolean, default: false } // true once a user account is created from this record
 }, { timestamps: true });
 
 // Virtual for family size

@@ -17,6 +17,7 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
         { path: '/shop-dashboard', name: 'Overview', icon: <LayoutDashboard size={20} /> },
         { path: '/stock', name: 'Stock Management', icon: <Package size={20} /> },
         { path: '/purchases', name: 'Purchase Requests', icon: <ShoppingCart size={20} /> },
+        { path: '/citizens', name: 'Citizens', icon: <Users size={20} /> },
         { path: '/delivery-requests', name: 'Delivery Requests', icon: <Truck size={20} /> },
         { path: '/delivery-team', name: 'Delivery Team', icon: <Users size={20} /> },
         { path: '/distribution', name: 'Distribution Records', icon: <ClipboardList size={20} /> },

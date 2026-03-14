@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-require('dotenv').config({ path: '../.env' });
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
 const User = require('../models/User');
 const Shop = require('../models/Shop');
@@ -15,7 +16,7 @@ const FraudAlert = require('../models/FraudAlert');
 const Notification = require('../models/Notification');
 
 const districts = ['Chennai', 'Coimbatore', 'Madurai', 'Trichy', 'Salem'];
-const categories = ['AAY', 'PHH', 'NPHH', 'AY'];
+const categories = ['AAY', 'PHH', 'NPHH'];
 
 const seedData = async () => {
     try {
@@ -204,30 +205,52 @@ const seedData = async () => {
         });
 
         // 8. Create Government Ration Card Records (for registration validation)
-        const rationRecordData = [
-            { rationCardNumber: 'TN-RC-001002', category: 'NPHH', address: '45, West Cross, Salem', district: 'Salem', members: [
-                { name: 'Karthik S', aadhaar: '345678901234', relation: 'Head', gender: 'Male' }
-            ], registered: false },
-            { rationCardNumber: 'TN-RC-001001', category: 'PHH', address: '12, Gandhi Nagar, Salem', district: 'Salem', members: [
-                { name: 'Murugan K', aadhaar: '234567890123', relation: 'Head', gender: 'Male' },
-                { name: 'Priya M', aadhaar: '234567890124', relation: 'Spouse', gender: 'Female' },
-                { name: 'Karthik M', aadhaar: '234567890125', relation: 'Son', gender: 'Male' }
-            ]},
-            { rationCardNumber: 'TN-RC-001002', category: 'AAY', address: '45, Anna Street, Chennai', district: 'Chennai', members: [
-                { name: 'Ravi S', aadhaar: '345678901234', relation: 'Head', gender: 'Male' },
-                { name: 'Kavitha R', aadhaar: '345678901235', relation: 'Spouse', gender: 'Female' }
-            ]},
-            { rationCardNumber: 'TN-RC-001003', category: 'PHH', address: '7, Cross Road, Coimbatore', district: 'Coimbatore', members: [
-                { name: 'Selvam T', aadhaar: '456789012345', relation: 'Head', gender: 'Male' },
-                { name: 'Meena S', aadhaar: '456789012346', relation: 'Spouse', gender: 'Female' },
-                { name: 'Anitha S', aadhaar: '456789012347', relation: 'Daughter', gender: 'Female' },
-                { name: 'Arun S', aadhaar: '456789012348', relation: 'Son', gender: 'Male' }
-            ]}
-        ];
+        const rationRecordData = [];
+        const familySizeRange = [2, 3, 4, 5];
+        const relations = ['Spouse', 'Son', 'Daughter', 'Mother', 'Father'];
+        const genders = ['Male', 'Female'];
+        const firstNames = ['Arun', 'Priya', 'Murugan', 'Kavitha', 'Selvam', 'Meena', 'Karthik', 'Anitha', 'Suresh', 'Deepa', 'Ravi', 'Lakshmi', 'Vijay', 'Shanthi', 'Rajesh', 'Uma'];
+        const lastNames = ['K', 'S', 'M', 'T', 'P', 'R', 'A', 'N'];
 
-        // Link records to actual shop IDs from our seeded shops
-        for (let i = 0; i < rationRecordData.length; i++) {
-            rationRecordData[i].assignedShop = shops[i % shops.length]._id;
+        // Generate 20 realistic families
+        for (let i = 1; i <= 20; i++) {
+            const district = districts[i % districts.length];
+            const category = categories[i % categories.length];
+            const familySize = familySizeRange[Math.floor(Math.random() * familySizeRange.length)];
+            const rationCardNumber = `TN-RC-0010${i.toString().padStart(2, '0')}`;
+            
+            const members = [];
+            // Head of Family
+            const headGender = genders[Math.floor(Math.random() * genders.length)];
+            const headName = `${firstNames[Math.floor(Math.random() * firstNames.length)]} ${lastNames[Math.floor(Math.random() * lastNames.length)]}`;
+            members.push({
+                name: headName,
+                aadhaar: `5${i.toString().padStart(2, '0')}000000001`, // Use 5 to distinguish from initial 4
+                relation: 'Head',
+                gender: headGender
+            });
+
+            // Other family members
+            for (let j = 1; j < familySize; j++) {
+                const memberGender = genders[Math.floor(Math.random() * genders.length)];
+                const memberName = `${firstNames[Math.floor(Math.random() * firstNames.length)]} ${lastNames[Math.floor(Math.random() * lastNames.length)]}`;
+                members.push({
+                    name: memberName,
+                    aadhaar: `5${i.toString().padStart(2, '0')}00000000${j + 1}`,
+                    relation: relations[j % relations.length],
+                    gender: memberGender
+                });
+            }
+
+            rationRecordData.push({
+                rationCardNumber,
+                category,
+                address: `${Math.floor(Math.random() * 200) + 1}, West Cross St, ${district}`,
+                district,
+                assignedShop: shops[i % shops.length]._id,
+                members,
+                registered: false
+            });
         }
 
         await RationCardRecord.insertMany(rationRecordData);

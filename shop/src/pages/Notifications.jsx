@@ -16,14 +16,14 @@ const Notifications = () => {
         setLoading(true);
         try {
             const token = sessionStorage.getItem('srms_shop_token');
-            const res = await axios.get(`http://localhost:5001/api/notifications/shop`, {
+            const res = await axios.get(`/api/notifications/shop`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setUsers(res.data);
             // Mark as read automatically when viewed
             const unreadIds = res.data.filter(n => !n.isRead).map(n => n._id);
             if (unreadIds.length > 0) {
-                await axios.post('http://localhost:5001/api/notifications/mark-read', 
+                await axios.post('/api/notifications/mark-read', 
                     { notificationIds: unreadIds },
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
@@ -52,7 +52,7 @@ const Notifications = () => {
         setSending(true);
         try {
             const token = sessionStorage.getItem('srms_shop_token');
-            await axios.post(`http://localhost:5001/api/shop-notifications/broadcast`, 
+            await axios.post(`/api/shop-notifications/broadcast`, 
                 { 
                     userIds: selectedUsers,
                     shopName: admin.shop.name 

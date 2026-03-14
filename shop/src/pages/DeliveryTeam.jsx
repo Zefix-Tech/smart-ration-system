@@ -18,7 +18,7 @@ const DeliveryTeam = () => {
     const fetchMembers = async () => {
         setLoading(true);
         try {
-            const res = await axios.get('http://localhost:5001/api/shop/delivery-team', {
+            const res = await axios.get('/api/shop/delivery-team', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setMembers(res.data);
@@ -40,7 +40,7 @@ const DeliveryTeam = () => {
         }
         setSaving(true);
         try {
-            await axios.post('http://localhost:5001/api/shop/delivery-team/add', form, {
+            await axios.post('/api/shop/delivery-team/add', form, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             toast.success(`${form.name} added to delivery team`);
@@ -57,7 +57,7 @@ const DeliveryTeam = () => {
     const handleRemove = async (id, name) => {
         if (!window.confirm(`Remove ${name} from the delivery team?`)) return;
         try {
-            await axios.delete(`http://localhost:5001/api/shop/delivery-team/${id}`, {
+            await axios.delete(`/api/shop/delivery-team/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             toast.success(`${name} removed`);

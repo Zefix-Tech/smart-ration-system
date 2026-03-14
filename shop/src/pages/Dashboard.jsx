@@ -39,7 +39,7 @@ const Dashboard = () => {
                 return;
             }
             const token = sessionStorage.getItem('srms_shop_token');
-            const res = await axios.get('http://localhost:5001/api/shop/dashboard-stats', {
+            const res = await axios.get('/api/shop/dashboard-stats', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setStats(res.data);
@@ -61,7 +61,7 @@ const Dashboard = () => {
         setSending(true);
         try {
             const token = sessionStorage.getItem('srms_shop_token');
-            const res = await axios.post('http://localhost:5001/api/shop/alerts/send', {}, {
+            const res = await axios.post('/api/shop/alerts/send', {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             toast.success(res.data.message);

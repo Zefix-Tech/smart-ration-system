@@ -163,7 +163,7 @@ const RationRecords = () => {
                                             </td>
                                             <td style={{ padding: '0.85rem 1rem', color: '#64748b', fontSize: '0.8rem' }}>{rec.assignedShop?.shopId || '—'}</td>
                                             <td style={{ padding: '0.85rem 1rem' }}>
-                                                {rec.isRegistered
+                                                {rec.registered
                                                     ? <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: '#15803d', fontSize: '0.78rem', fontWeight: '600' }}><UserCheck size={13} /> Registered</span>
                                                     : <span style={{ color: '#94a3b8', fontSize: '0.78rem' }}>Available</span>}
                                             </td>

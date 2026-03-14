@@ -73,6 +73,31 @@ router.get('/delivery-requests', async (req, res) => {
 });
 
 
+// 2.5 Shop Citizens List
+// GET /api/shop/citizens
+router.get('/citizens', async (req, res) => {
+    try {
+        const User = require('../models/User');
+        const { search } = req.query;
+        let query = { shopId: req.shopId, role: 'user' };
+
+        if (search) {
+            query.$or = [
+                { name: { $regex: search, $options: 'i' } },
+                { rationCard: { $regex: search, $options: 'i' } }
+            ];
+        }
+
+        const citizens = await User.find(query)
+            .select('name phone rationCard category address status')
+            .sort({ name: 1 });
+        res.json(citizens);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+
 // 3. Complaints
 // GET /api/shop/complaints
 router.get('/complaints', async (req, res) => {

@@ -23,7 +23,7 @@ const Stock = () => {
         if (!shopId) return;
         setLoading(true);
         try {
-            const res = await axios.get(`http://localhost:5001/api/shop-stock/current/${shopId}`, {
+            const res = await axios.get(`/api/shop-stock/current/${shopId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setStock(res.data);
@@ -54,7 +54,7 @@ const Stock = () => {
         setSaving(true);
         try {
             const res = await axios.patch(
-                `http://localhost:5001/api/shop-stock/add/${shopId}`,
+                `/api/shop-stock/add/${shopId}`,
                 { [selectedCommodity]: qty },
                 { headers: { Authorization: `Bearer ${token}` } }
             );

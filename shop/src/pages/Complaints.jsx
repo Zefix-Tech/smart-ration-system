@@ -16,7 +16,7 @@ const Complaints = () => {
         setLoading(true);
         try {
             const token = sessionStorage.getItem('srms_shop_token');
-            const res = await axios.get(`http://localhost:5001/api/shop/complaints`, {
+            const res = await axios.get(`/api/shop/complaints`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setComplaints(res.data);
@@ -34,7 +34,7 @@ const Complaints = () => {
     const handleResolve = async (id) => {
         try {
             const token = sessionStorage.getItem('srms_shop_token');
-            await axios.patch(`http://localhost:5001/api/shop-complaints/resolve/${id}`, 
+            await axios.patch(`/api/shop-complaints/resolve/${id}`, 
                 { response: responseText },
                 { headers: { Authorization: `Bearer ${token}` } }
             );

@@ -62,8 +62,17 @@ const Register = () => {
             if (!formData.name || !formData.aadhaar || !formData.rationCard || !formData.phone || !formData.password) {
                 return setError('Please fill all required fields');
             }
-            if (formData.aadhaar.length !== 12) {
-                return setError('Aadhaar number must be 12 digits');
+            
+            // Aadhaar Validation
+            const aadhaarRegex = /^[0-9]{12}$/;
+            if (!aadhaarRegex.test(formData.aadhaar)) {
+                return setError('Aadhaar number must be exactly 12 digits');
+            }
+
+            // Ration Card Validation (Tamil Nadu Format: TN12345678)
+            const rationRegex = /^[A-Z]{2}[0-9]{8}$/;
+            if (!rationRegex.test(formData.rationCard)) {
+                return setError('Invalid Ration Card format. Format: TN12345678 (2 letters + 8 digits)');
             }
         }
         setError('');

@@ -29,7 +29,7 @@ const DataTable = ({ columns, data, loading, total, page, pages, onPageChange, o
                     <tbody className="datatable-tbody">
                         {loading ? (
                             <tr><td colSpan={columns.length} style={{ textAlign: 'center', padding: '3rem' }}>Loading...</td></tr>
-                        ) : data && data.length > 0 ? (
+                        ) : Array.isArray(data) && data.length > 0 ? (
                             data.map((row, i) => (
                                 <tr key={i}>
                                     {columns.map((col, j) => (

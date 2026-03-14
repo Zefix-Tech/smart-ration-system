@@ -26,7 +26,7 @@ const Reports = () => {
         setLoading(true);
         try {
             const token = sessionStorage.getItem('srms_shop_token');
-            const res = await axios.get(`http://localhost:5001/api/shop-reports/${admin.shop._id}`, {
+            const res = await axios.get(`/api/shop-reports/${admin.shop._id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setReportData(res.data);

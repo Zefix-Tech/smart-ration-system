@@ -14,7 +14,7 @@ const Distribution = () => {
         setLoading(true);
         try {
             const token = sessionStorage.getItem('srms_shop_token');
-            const res = await axios.get(`http://localhost:5001/api/shop/distributions`, {
+            const res = await axios.get(`/api/shop/distributions`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setDistributions(res.data);

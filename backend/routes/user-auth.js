@@ -12,9 +12,48 @@ router.post('/register', async (req, res) => {
         const { name, aadhaar, rationCard, phone, address, password, cityId } = req.body;
         const shopId = req.body.shopId && req.body.shopId !== '' ? req.body.shopId : undefined;
 
-        // Aadhaar format check
-        if (!/^\d{12}$/.test(aadhaar)) {
-            return res.status(400).json({ message: 'Invalid Aadhaar Number (must be 12 digits)' });
+        // ─── PART 1 & 2: STRICT FORMAT VALIDATION ───
+        const rationRegex = /^[A-Z]{2}[0-9]{8}$/;
+        const aadhaarRegex = /^[0-9]{12}$/;
+
+        const isRationValid = rationRegex.test(rationCard);
+        const isAadhaarValid = aadhaarRegex.test(aadhaar);
+
+        if (!isRationValid || !isAadhaarValid) {
+            // ─── PART 3: FRAUD DETECTION & LOGGING ───
+            const FraudAlert = require('../models/FraudAlert');
+            const Notification = require('../models/Notification');
+
+            // Log Fraud
+            const fraud = new FraudAlert({
+                activityType: 'registration_fraud',
+                description: `Fraud attempt detected: Invalid ${!isRationValid ? 'Ration Card (' + rationCard + ')' : ''} ${!isAadhaarValid ? 'Aadhaar (' + aadhaar + ')' : ''} format during registration.`,
+                riskLevel: 'high'
+            });
+            await fraud.save();
+
+            // Admin Alert
+            const adminAlert = new Notification({
+                title: 'Fraud Registration Attempt',
+                message: `An invalid Aadhaar or Ration Card format was detected during registration from phone: ${phone}.`,
+                type: 'fraud_alert',
+                recipientRole: 'admin',
+                priority: 'high'
+            });
+            await adminAlert.save();
+
+            return res.status(403).json({ 
+                success: false, 
+                message: 'Registration blocked due to invalid document formats. This attempt has been logged for security review.' 
+            });
+        }
+
+        // ─── PART 4: DUPLICATE CHECK ───
+        const duplicate = await User.findOne({ $or: [{ aadhaar }, { rationCard }, { phone }] });
+        if (duplicate) {
+            let field = 'Aadhaar or Ration Card';
+            if (duplicate.phone === phone) field = 'Phone Number';
+            return res.status(400).json({ message: `This ${field} is already registered.` });
         }
 
         // ─── Step 1: Validate against Government Ration Card Record ───
@@ -22,7 +61,8 @@ router.post('/register', async (req, res) => {
         if (!govRecord) {
             return res.status(400).json({ message: 'Ration card not found in government database. Please contact your local office.' });
         }
-        if (govRecord.isRegistered) {
+
+        if (govRecord.registered) {
             return res.status(400).json({ message: 'A user account already exists for this ration card number.' });
         }
 
@@ -30,13 +70,6 @@ router.post('/register', async (req, res) => {
         const memberMatch = govRecord.members.find(m => m.aadhaar === aadhaar);
         if (!memberMatch) {
             return res.status(400).json({ message: 'Aadhaar number does not match any family member on this ration card.' });
-        }
-        // ─────────────────────────────────────────────────────────────
-
-        // Step 2: Uniqueness check (phone)
-        const existingUser = await User.findOne({ $or: [{ phone }] });
-        if (existingUser) {
-            return res.status(400).json({ message: 'An account with this phone number already exists.' });
         }
 
         // Step 3: Check Shop Capacity
@@ -69,7 +102,7 @@ router.post('/register', async (req, res) => {
         await user.save();
 
         // Step 5: Mark government record as registered
-        govRecord.isRegistered = true;
+        govRecord.registered = true;
         await govRecord.save();
 
         res.status(201).json({ success: true, message: 'Registration successful' });

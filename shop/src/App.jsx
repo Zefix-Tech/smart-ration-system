@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Stock from './pages/Stock';
 import Purchases from './pages/Purchases';
+import ShopCitizens from './pages/ShopCitizens';
 import Delivery from './pages/Delivery';
 import Complaints from './pages/Complaints';
 import Distribution from './pages/Distribution';
@@ -41,6 +42,7 @@ const AppRoutes = () => {
                 <Route path="/" element={<Navigate to="/shop-dashboard" replace />} />
                 <Route path="/stock" element={<Stock />} />
                 <Route path="/purchases" element={<Purchases />} />
+                <Route path="/citizens" element={<ShopCitizens />} />
                 <Route path="/delivery-requests" element={<Delivery />} />
                 <Route path="/delivery" element={<Navigate to="/delivery-requests" replace />} />
                 <Route path="/delivery-team" element={<DeliveryTeam />} />

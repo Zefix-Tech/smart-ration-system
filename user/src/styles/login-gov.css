@@ -1,0 +1,234 @@
+.login-wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f4f0;
+    padding: 1.5rem;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.gov-branding {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.gov-emblem {
+    height: 60px;
+    width: auto;
+    margin-bottom: 0.5rem;
+}
+
+.gov-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #475569;
+    letter-spacing: 1px;
+    margin: 0;
+}
+
+.gov-dept {
+    font-size: 1.125rem;
+    font-weight: 800;
+    color: #064e3b;
+    margin: 0;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 440px;
+    background: white;
+    padding: 2.5rem;
+    border-radius: 1.25rem;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    border-top: 6px solid #2e7d32;
+    position: relative;
+}
+
+.card-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.card-header .icon-box {
+    background: #f0fdf4;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    color: #166534;
+}
+
+.card-header h2 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0;
+}
+
+.card-header p {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin-top: 0.5rem;
+}
+
+.error-alert {
+    background-color: #fef2f2;
+    color: #b91c1c;
+    padding: 0.875rem;
+    border-radius: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    border: 1px solid #fee2e2;
+    text-align: center;
+}
+
+.form-group-gov {
+    margin-bottom: 1.5rem;
+}
+
+.label-gov {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #475569;
+    margin-bottom: 0.625rem;
+    letter-spacing: 0.5px;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-wrapper svg {
+    position: absolute;
+    left: 1.125rem;
+    color: #94a3b8;
+}
+
+.input-gov {
+    width: 100%;
+    padding: 0.875rem 1rem 0.875rem 3.25rem;
+    background-color: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    transition: all 0.2s;
+    outline: none;
+}
+
+.input-gov:focus {
+    border-color: #2e7d32;
+    background-color: white;
+    box-shadow: 0 0 0 4px rgba(46, 125, 50, 0.1);
+}
+
+.captcha-row {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.captcha-display {
+    background: #064e3b;
+    color: white;
+    padding: 0.625rem 1.25rem;
+    font-family: 'Monaco', 'Consolas', monospace;
+    font-weight: 900;
+    border-radius: 0.5rem;
+    letter-spacing: 3px;
+    font-style: italic;
+    user-select: none;
+    font-size: 1.125rem;
+}
+
+.refresh-btn {
+    padding: 0.625rem;
+    color: #2e7d32;
+    background: #f0fdf4;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.refresh-btn:hover {
+    background: #dcfce7;
+}
+
+.btn-login-gov {
+    width: 100%;
+    background-color: #2e7d32;
+    color: white;
+    padding: 1rem;
+    border: none;
+    border-radius: 0.75rem;
+    font-weight: 700;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(46, 125, 50, 0.2);
+}
+
+.btn-login-gov:hover:not(:disabled) {
+    background-color: #166534;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(46, 125, 50, 0.3);
+}
+
+.btn-login-gov:disabled {
+    background-color: #94a3b8;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.security-notice {
+    margin-top: 2rem;
+    font-size: 0.75rem;
+    color: #64748b;
+    text-align: center;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 1.5rem;
+    line-height: 1.4;
+}
+
+.auth-footer-gov {
+    margin-top: 1.5rem;
+    text-align: center;
+    font-size: 0.9375rem;
+    color: #64748b;
+}
+
+.auth-link-gov {
+    color: #2e7d32;
+    font-weight: 700;
+    text-decoration: none;
+    margin-left: 0.25rem;
+}
+
+.auth-link-gov:hover {
+    text-decoration: underline;
+}
+
+.login-footer-main {
+    margin-top: 3rem;
+    font-size: 0.8125rem;
+    color: #94a3b8;
+    text-align: center;
+}

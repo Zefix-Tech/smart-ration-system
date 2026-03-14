@@ -7,7 +7,7 @@ export const AuthProvider = ({ children }) => {
     const [admin, setAdmin] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    const API_URL = 'http://localhost:5001/api';
+    const API_URL = '/api';
 
     useEffect(() => {
         const token = sessionStorage.getItem('srms_shop_token');
