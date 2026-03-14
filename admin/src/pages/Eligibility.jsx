@@ -13,7 +13,7 @@ const Eligibility = () => {
         setLoading(true);
         try {
             const token = sessionStorage.getItem('srms_token');
-            const res = await axios.get('http://localhost:5001/api/eligibility/admin/requests?status=PENDING', {
+            const res = await axios.get('http://localhost:5001/api/eligibility/admin/requests?status=Hospital Verified', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setData(res.data);
@@ -30,15 +30,17 @@ const Eligibility = () => {
     }, []);
 
     const handleAction = async (id, status) => {
-        if (!window.confirm(`Are you sure you want to mark this request as ${status}?`)) return;
+        const actionText = status === 'VERIFIED' ? 'approving' : 'rejecting';
+        if (!window.confirm(`Are you sure you want to proceed with ${actionText} this request?`)) return;
         
-        const loadingToast = toast.loading(`Marking as ${status}...`);
+        const loadingToast = toast.loading(`${actionText.charAt(0).toUpperCase() + actionText.slice(1)} request...`);
         try {
             const token = sessionStorage.getItem('srms_token');
-            await axios.put(`http://localhost:5001/api/eligibility/admin/verify/${id}`, { status }, {
+            const res = await axios.put(`http://localhost:5001/api/eligibility/admin/verify/${id}`, { status }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            toast.success(`Request ${status} successfully!`, { id: loadingToast });
+            
+            toast.success(res.data.message || `Request ${status.toLowerCase()} successfully!`, { id: loadingToast });
             fetchRequests();
         } catch (err) {
             toast.error(err.response?.data?.message || 'Operation failed', { id: loadingToast });
@@ -89,12 +91,14 @@ const Eligibility = () => {
                             Confidence: {(row.aiConfidenceScore * 100).toFixed(0)}%
                         </div>
                     )}
-                    {row.aiPredictedEligibility && (
-                        <div className="text-gray-400 italic">
-                            Match: {row.aiPredictedEligibility}
-                        </div>
-                    )}
                 </div>
+            )
+        },
+        {
+            header: 'Status', render: (row) => (
+                <span className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                    {row.eligibilityStatus}
+                </span>
             )
         },
         {

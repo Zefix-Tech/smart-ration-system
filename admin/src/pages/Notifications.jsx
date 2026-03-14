@@ -20,7 +20,7 @@ const Notifications = () => {
         setLoading(true);
         try {
             const token = sessionStorage.getItem('srms_token');
-            const res = await axios.get('http://localhost:5001/api/notifications', {
+            const res = await axios.get('http://localhost:5001/api/notifications/admin', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setNotifications(res.data);
@@ -118,6 +118,15 @@ const Notifications = () => {
                                         <option value="urgent">Urgent</option>
                                     </select>
                                 </div>
+                            </div>
+                            <div>
+                                <label className="form-label">Target Audience</label>
+                                <select value={targetAudience} onChange={e => setTargetAudience(e.target.value)} className="form-input">
+                                    <option value="all">Global (All Users)</option>
+                                    <option value="users">Citizens Only</option>
+                                    <option value="shop_owners">Shop Owners Only</option>
+                                    <option value="admin">System Admins Only</option>
+                                </select>
                             </div>
                         </div>
                         <div>

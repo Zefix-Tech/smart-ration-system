@@ -13,7 +13,7 @@ const Login = () => {
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-    const { login } = useAuth();
+    const { admin, login } = useAuth();
     const navigate = useNavigate();
 
     // Simple CAPTCHA generation
