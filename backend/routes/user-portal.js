@@ -273,17 +273,20 @@ router.get('/complaints', async (req, res) => {
 // Notifications
 router.get('/notifications', async (req, res) => {
     try {
+        const userId = req.user.id;
         const notifications = await Notification.find({ 
             $or: [
-                { targetAudience: 'all' },
-                { targetAudience: 'users' },
-                { recipients: req.user.id }
+                { recipientRole: 'all' },
+                { recipientRole: 'citizen', recipientId: userId },
+                { recipientRole: 'citizen', shopId: { $exists: false }, recipientId: { $exists: false } }, // Global citizen announcements
+                { targetAudience: 'all' }, // Backward compatibility
+                { targetAudience: 'users' } // Backward compatibility
             ]
         }).sort({ sentAt: -1 }).lean();
         
         const mapped = notifications.map(notif => ({
             ...notif,
-            isRead: notif.readBy?.map(id => id.toString()).includes(req.user.id) || false
+            isRead: notif.readBy?.map(id => id.toString()).includes(userId) || false
         }));
         
         res.json(mapped);
@@ -424,8 +427,8 @@ router.post('/ration-preference', async (req, res) => {
                 title: 'Ration Donated successfully',
                 message: `Thank you for donating your ${currentMonth} ration. Your ration has been added to the donation pool to aid orphanages and old age homes.`,
                 type: 'system',
-                recipientType: 'users',
-                recipients: [user._id]
+                recipientRole: 'citizen',
+                recipientId: user._id
             });
             await notification.save();
         }

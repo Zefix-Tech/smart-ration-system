@@ -93,8 +93,12 @@ router.get('/notifications', async (req, res) => {
     try {
         const notifications = await Notification.find({ 
             $or: [
-                { targetAudience: 'all' },
-                { targetAudience: 'shop_owners' }
+                { recipientRole: 'all' },
+                { recipientRole: 'shop', shopId: req.shopId },
+                { recipientRole: 'all', shopId: req.shopId }, // Shop-wide broadcas
+                { recipientRole: 'shop', shopId: { $exists: false } }, // Global shop alerts
+                { targetAudience: 'all' }, // Backward compatibility
+                { targetAudience: 'shop_owners' } // Backward compatibility
             ]
         }).sort({ sentAt: -1 }).lean();
 
@@ -205,15 +209,18 @@ router.post('/alerts/send', async (req, res) => {
             return res.status(400).json({ message: 'No pending users to notify' });
         }
 
-        const notification = await Notification.create({
+        const notifications = pendingUserIds.map(userId => ({
             title: 'Shop Alert: Collection Reminder',
             message: 'Ration shop is currently free. Please collect your ration now.',
             type: 'alert',
             priority: 'high',
             sentBy: req.admin.id,
-            targetAudience: 'specific',
-            recipients: pendingUserIds
-        });
+            recipientRole: 'citizen',
+            recipientId: userId,
+            shopId: req.shopId
+        }));
+
+        await Notification.insertMany(notifications);
 
         res.json({ 
             success: true, 

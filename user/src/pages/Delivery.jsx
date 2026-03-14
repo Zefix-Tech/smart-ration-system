@@ -76,6 +76,8 @@ const DeliveryRequest = () => {
     };
 
     const isPending = user?.eligibilityStatus === 'PENDING';
+    const isHospitalVerified = user?.eligibilityStatus === 'Hospital Verified';
+    const isHospitalRejected = user?.eligibilityStatus === 'Hospital Rejected';
     const isVerified = user?.eligibilityStatus === 'VERIFIED';
     const isRejected = user?.eligibilityStatus === 'REJECTED';
     const isNone = !user?.eligibilityStatus || user?.eligibilityStatus === 'NONE';
@@ -97,7 +99,23 @@ const DeliveryRequest = () => {
                 <div className="alert flex-item-center gap-2" style={{ marginBottom: '1.5rem', backgroundColor: '#fff8e1', color: '#ff8f00', border: '1px solid #ffe082', padding: '1rem', borderRadius: '0.5rem' }}>
                     <AlertCircle size={20} />
                     <strong>Status: </strong>
-                    Eligibility verification pending admin approval.
+                    Awaiting Hospital Verification. Please wait for medical review.
+                </div>
+            )}
+
+            {isHospitalVerified && (
+                <div className="alert flex-item-center gap-2" style={{ marginBottom: '1.5rem', backgroundColor: '#e0f2f1', color: '#00796b', border: '1px solid #b2dfdb', padding: '1rem', borderRadius: '0.5rem' }}>
+                    <CheckCircle size={20} />
+                    <strong>Stage 1 Complete: </strong>
+                    Medical certificate verified by hospital. Awaiting final Admin approval.
+                </div>
+            )}
+
+            {isHospitalRejected && (
+                <div className="alert flex-item-center gap-2" style={{ marginBottom: '1.5rem', backgroundColor: '#ffebee', color: '#c62828', border: '1px solid #ffcdd2', padding: '1rem', borderRadius: '0.5rem' }}>
+                    <AlertCircle size={20} />
+                    <strong>Rejected by Hospital: </strong>
+                    Your medical certificate was rejected by the hospital staff. Please upload a valid proof.
                 </div>
             )}
 
@@ -105,7 +123,7 @@ const DeliveryRequest = () => {
                 <div className="alert success flex-item-center gap-2" style={{ marginBottom: '1.5rem', backgroundColor: '#e0f2f1', color: '#00695c', border: '1px solid #b2dfdb', padding: '1rem', borderRadius: '0.5rem' }}>
                     <CheckCircle size={20} />
                     <strong>Verified: </strong>
-                    Delivery request approved. You can now request ration delivery.
+                    Your medical certificate has been verified successfully. You can now request ration delivery.
                 </div>
             )}
 
@@ -113,12 +131,12 @@ const DeliveryRequest = () => {
                 <div className="alert error flex-item-center gap-2" style={{ marginBottom: '1.5rem', backgroundColor: '#ffebee', color: '#c62828', border: '1px solid #ffcdd2', padding: '1rem', borderRadius: '0.5rem' }}>
                     <AlertCircle size={20} />
                     <strong>Rejected: </strong>
-                    Your previous eligibility request was rejected. Please submit a valid document.
+                    Your medical certificate was rejected. Please upload a valid certificate.
                 </div>
             )}
 
             {/* STEP 1: Eligibility Upload Form (Shown if NOT VERIFIED AND NOT PENDING) */}
-            {(isNone || isRejected) && (
+            {(isNone || isRejected || isHospitalRejected) && (
                 <div className="form-card">
                     <div className="section-header" style={{ marginBottom: '15px' }}>
                         <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><FileText size={20} /> Delivery Eligibility Verification</h3>

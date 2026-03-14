@@ -34,12 +34,27 @@ router.get('/trends', async (req, res) => {
 router.get('/alerts', async (req, res) => {
     try {
         const stocks = await Stock.find({ year: 2026, month: 3 });
-        const alerts = stocks.map(s => ({
-            commodity: s.commodity,
-            remaining: s.remaining,
-            total: s.totalQuantity,
-            percentage: Math.round((s.remaining / s.totalQuantity) * 100)
-        }));
+        
+        // Aggregate by commodity (if multiple shops or entries exist)
+        const summary = {};
+        stocks.forEach(s => {
+            if (!summary[s.commodity]) {
+                summary[s.commodity] = { remaining: 0, total: 0 };
+            }
+            summary[s.commodity].remaining += s.remaining || 0;
+            summary[s.commodity].total += s.totalQuantity || 0;
+        });
+
+        // Filter for < 20% remaining
+        const alerts = Object.entries(summary)
+            .map(([commodity, data]) => ({
+                commodity,
+                remaining: data.remaining,
+                total: data.total,
+                percentage: data.total > 0 ? Math.round((data.remaining / data.total) * 100) : 0
+            }))
+            .filter(alert => alert.percentage < 20); // Only critical stocks
+
         res.json(alerts);
     } catch (err) {
         res.status(500).json({ message: err.message });
@@ -68,7 +83,17 @@ router.post('/update', async (req, res) => {
         if (wheat !== undefined) await updateCommodity('wheat', wheat);
         if (sugar !== undefined) await updateCommodity('sugar', sugar);
 
-        res.json({ success: true, message: 'Stock updated successfully' });
+        const Notification = require('../models/Notification');
+        const adminNotification = new Notification({
+            title: 'New Stock Allocation',
+            message: `New month stock allocated for ${month}/${year}.`,
+            type: 'stock_update',
+            recipientRole: 'admin',
+            priority: 'normal'
+        });
+        await adminNotification.save();
+
+        res.json({ success: true, message: 'Stock updated successfully. System alert sent to admins.' });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }

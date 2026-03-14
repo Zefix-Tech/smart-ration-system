@@ -29,17 +29,17 @@ router.patch('/update/:id', async (req, res) => {
         if (status === 'approved' && request.shop) {
             // Find all deliverymen for this shop
             const deliverymen = await Admin.find({ shop: request.shop, role: 'delivery_person' });
-            const delivery_personIds = deliverymen.map(d => d._id);
-
-            if (delivery_personIds.length > 0) {
-                const notification = new Notification({
+            
+            if (deliverymen.length > 0) {
+                const notifications = deliverymen.map(dm => ({
                     title: 'New Delivery Assigned',
                     message: `A new delivery request for ${request.user?.name} has been approved and is ready for dispatch.`,
                     type: 'alert',
-                    targetAudience: 'specific',
-                    recipients: delivery_personIds
-                });
-                await notification.save();
+                    recipientRole: 'shop',
+                    recipientId: dm._id,
+                    shopId: request.shop
+                }));
+                await Notification.insertMany(notifications);
             }
         }
 
@@ -70,8 +70,8 @@ router.post('/generate-otp/:id', async (req, res) => {
             message: `Your ration delivery OTP is ${otp}. Please share this OTP with the delivery person to confirm delivery.`,
             type: 'delivery_otp',
             priority: 'high',
-            targetAudience: 'specific',
-            recipients: [delivery.user._id]
+            recipientRole: 'citizen',
+            recipientId: delivery.user._id
         });
         await notification.save();
 

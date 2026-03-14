@@ -30,7 +30,8 @@ router.post('/broadcast', async (req, res) => {
         const { userIds, message, shopName } = req.body;
         
         const notifications = userIds.map(userId => ({
-            user: userId,
+            recipientId: userId,
+            recipientRole: 'citizen',
             title: 'Shop is Free for Collection',
             message: `Smart Ration System Notification\n\nDear User,\nThe ration shop (${shopName}) is currently free. You can visit now to collect your ration items.\n\nThank you.`,
             type: 'announcement',

@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const Admin = require('./models/Admin');
+const Hospital = require('./models/Hospital');
 
 const app = express();
 
@@ -44,6 +45,7 @@ app.use('/api/ml', require('./routes/ml'));
 app.use('/api/audit', auth, superAdminOnly, require('./routes/audit'));
 app.use('/api/eligibility', auth, require('./routes/eligibility'));
 app.use('/api/ration-records', auth, require('./routes/ration-records'));
+app.use('/api/hospital', require('./routes/hospital'));
 
 app.use('/api/shop', auth, require('./routes/shop-portal'));
 app.use('/api/admin/analytics', auth, require('./routes/analytics'));
@@ -89,6 +91,19 @@ const startServer = async () => {
                 role: 'shop_owner'
             });
             console.log('✅ Default Super Admin created: admin@srms.gov.in | admin123');
+        }
+
+        // Create default hospital if none exists
+        const hospitalCount = await Hospital.countDocuments();
+        if (hospitalCount === 0) {
+            const hashedPw = await bcrypt.hash('hospital123', 10);
+            await Hospital.create({
+                hospitalName: 'City Medical College & Hospital',
+                hospitalId: 'HOSP001',
+                email: 'verify@cityhospital.gov.in',
+                password: hashedPw
+            });
+            console.log('✅ Default Hospital Verifier created: verify@cityhospital.gov.in | hospital123');
         }
 
         app.listen(PORT, () => {

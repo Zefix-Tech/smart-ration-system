@@ -2,15 +2,63 @@ const express = require('express');
 const Notification = require('../models/Notification');
 const router = express.Router();
 
-// Get all notifications
-router.get('/', async (req, res) => {
+// Get Admin notifications
+router.get('/admin', async (req, res) => {
     try {
-        const userId = req.admin?.id || req.user?.id;
-        const notifications = await Notification.find().sort({ sentAt: -1 }).limit(50).lean();
+        if (!req.admin) return res.status(403).json({ message: 'Access denied' });
+        
+        const userId = req.admin.id;
+        const notifications = await Notification.find({ 
+            recipientRole: 'admin' 
+        }).sort({ sentAt: -1 }).limit(50).lean();
         
         const mapped = notifications.map(notif => ({
             ...notif,
-            isRead: notif.readBy?.map(id => id.toString()).includes(userId) || false
+            isRead: notif.readBy?.some(id => id.toString() === userId) || false
+        }));
+        
+        res.json(mapped);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+// Get Citizen notifications
+router.get('/citizen', async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const notifications = await Notification.find({ 
+            recipientRole: 'citizen',
+            recipientId: userId
+        }).sort({ sentAt: -1 }).limit(50).lean();
+        
+        const mapped = notifications.map(notif => ({
+            ...notif,
+            isRead: notif.readBy?.some(id => id.toString() === userId) || false
+        }));
+        
+        res.json(mapped);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+// Get Shop notifications
+router.get('/shop', async (req, res) => {
+    try {
+        const adminId = req.admin?.id || req.user?.id;
+        const shopId = req.shopId;
+        
+        if (!shopId) return res.status(400).json({ message: 'Shop ID not found in session' });
+
+        const notifications = await Notification.find({ 
+            recipientRole: 'shop',
+            shopId: shopId
+        }).sort({ sentAt: -1 }).limit(50).lean();
+        
+        const mapped = notifications.map(notif => ({
+            ...notif,
+            isRead: notif.readBy?.some(id => id.toString() === adminId) || false
         }));
         
         res.json(mapped);
@@ -39,16 +87,19 @@ router.post('/mark-read', async (req, res) => {
     }
 });
 
-// Create notification (Broadcast)
+// Create notification
 router.post('/', async (req, res) => {
     try {
-        const { title, message, type, priority, targetAudience } = req.body;
+        const { title, message, type, priority, recipientRole, recipientId, shopId } = req.body;
+        
         const notification = new Notification({ 
             title, 
             message, 
             type: type || 'announcement', 
             priority: priority || 'normal', 
-            targetAudience: targetAudience || 'all',
+            recipientRole: recipientRole || 'admin',
+            recipientId,
+            shopId,
             sentBy: req.admin?.id 
         });
         await notification.save();
