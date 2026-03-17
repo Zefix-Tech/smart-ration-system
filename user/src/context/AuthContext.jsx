@@ -7,7 +7,7 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    const API_URL = 'http://localhost:5001/api/auth/user';
+    const API_URL = '/api/auth/user';
 
     useEffect(() => {
         const token = sessionStorage.getItem('srms_user_token');
@@ -24,7 +24,7 @@ export const AuthProvider = ({ children }) => {
 
     const checkAuth = async (token) => {
         try {
-            const res = await axios.get('http://localhost:5001/api/user-portal/profile', {
+            const res = await axios.get('/api/user-portal/profile', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setUser(res.data);

@@ -7,7 +7,7 @@ import '../styles/login.css';
 
 const Login = () => {
     const [email, setEmail] = useState('admin@srms.gov.in');
-    const [password, setPassword] = useState('admin123');
+    const [password, setPassword] = useState('shop123');
     const [captcha, setCaptcha] = useState('');
     const [enteredCaptcha, setEnteredCaptcha] = useState('');
     const [error, setError] = useState('');

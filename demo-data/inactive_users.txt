@@ -1,0 +1,12 @@
+--- 📋 Inactive Users for Registration Testing ---
+
+User: Selvam A | Ration: TN-RC-300000 | Aadhaar: 510000002000
+User: Arun N | Ration: TN-RC-300001 | Aadhaar: 510000002001
+User: Ravi R | Ration: TN-RC-300002 | Aadhaar: 510000002002
+User: Vidya A | Ration: TN-RC-300003 | Aadhaar: 510000002003
+User: Priya A | Ration: TN-RC-300004 | Aadhaar: 510000002004
+User: Uma S | Ration: TN-RC-300005 | Aadhaar: 510000002005
+User: Anitha R | Ration: TN-RC-300006 | Aadhaar: 510000002006
+User: Deepak N | Ration: TN-RC-300007 | Aadhaar: 510000002007
+User: Ravi J | Ration: TN-RC-300008 | Aadhaar: 510000002008
+User: Karthik N | Ration: TN-RC-300009 | Aadhaar: 510000002009

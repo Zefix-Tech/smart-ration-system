@@ -41,7 +41,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const login = async (email, password) => {
-        const res = await axios.post(`${API_URL.replace('/api', '/api/shop')}/login`, { email, password });
+        const res = await axios.post(`${API_URL}/auth/login`, { email, password });
         if (['shop_owner', 'delivery_person'].includes(res.data.admin.role)) {
             sessionStorage.setItem('srms_shop_token', res.data.token);
             sessionStorage.setItem('srms_admin_data', JSON.stringify(res.data.admin));

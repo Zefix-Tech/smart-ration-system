@@ -11,14 +11,14 @@ const Notifications = () => {
         const fetchNotifications = async () => {
             try {
                 const token = sessionStorage.getItem('srms_user_token');
-                const res = await axios.get('http://localhost:5001/api/notifications/citizen', {
+                const res = await axios.get('/api/notifications/citizen', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setNotifications(res.data);
                 
                 const unreadIds = res.data.filter(n => !n.isRead).map(n => n._id);
                 if (unreadIds.length > 0) {
-                    await axios.post('http://localhost:5001/api/notifications/mark-read', 
+                    await axios.post('/api/notifications/mark-read', 
                         { notificationIds: unreadIds },
                         { headers: { Authorization: `Bearer ${token}` } }
                     );

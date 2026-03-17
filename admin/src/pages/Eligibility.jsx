@@ -81,18 +81,31 @@ const Eligibility = () => {
             )
         },
         {
-            header: 'AI Result', render: (row) => (
-                <div className="text-xs">
-                    <div className={`font-bold ${row.aiVerificationStatus === 'AI_VERIFIED' ? 'text-green-600' : row.aiVerificationStatus === 'AI_REJECTED' ? 'text-red-600' : 'text-orange-500'}`}>
-                        {row.aiVerificationStatus?.replace('_', ' ') || 'PENDING'}
-                    </div>
-                    {row.aiConfidenceScore > 0 && (
-                        <div className="text-gray-500">
-                            Confidence: {(row.aiConfidenceScore * 100).toFixed(0)}%
+            header: 'AI Result', render: (row) => {
+                const getConfidenceColor = (score) => {
+                    if (score >= 80) return 'text-green-600';
+                    if (score >= 50) return 'text-yellow-600';
+                    return 'text-red-600';
+                };
+
+                return (
+                    <div className="text-xs">
+                        <div className={`font-bold ${row.aiVerificationStatus === 'AI_VERIFIED' ? 'text-green-600' : row.aiVerificationStatus === 'AI_REJECTED' ? 'text-red-600' : 'text-orange-500'}`}>
+                            {row.aiVerificationStatus?.replace('_', ' ') || 'PENDING'}
                         </div>
-                    )}
-                </div>
-            )
+                        {row.aiConfidenceScore !== undefined && (
+                            <div className={`font-semibold ${getConfidenceColor(row.aiConfidenceScore)}`}>
+                                Confidence: {row.aiConfidenceScore}%
+                            </div>
+                        )}
+                        {row.detectedKeywords?.length > 0 && (
+                            <div className="text-gray-400 mt-1">
+                                Keywords: {row.detectedKeywords.join(', ')}
+                            </div>
+                        )}
+                    </div>
+                );
+            }
         },
         {
             header: 'Status', render: (row) => (

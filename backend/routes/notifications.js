@@ -28,8 +28,13 @@ router.get('/citizen', async (req, res) => {
     try {
         const userId = req.user.id;
         const notifications = await Notification.find({ 
-            recipientRole: 'citizen',
-            recipientId: userId
+            $or: [
+                { recipientRole: 'all' },
+                { recipientRole: 'citizen', recipientId: userId },
+                { recipientRole: 'citizen', shopId: { $exists: false }, recipientId: { $exists: false } },
+                { targetAudience: 'all' },
+                { targetAudience: 'users' }
+            ]
         }).sort({ sentAt: -1 }).limit(50).lean();
         
         const mapped = notifications.map(notif => ({

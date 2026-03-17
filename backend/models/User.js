@@ -3,10 +3,10 @@ const mongoose = require('mongoose');
 const userSchema = new mongoose.Schema({
     name: { type: String, required: true },
     email: { type: String, default: '' },
-    phone: { type: String, required: true },
-    password: { type: String, required: true }, // Added for Login
-    rationCard: { type: String, required: true, unique: true },
-    aadhaar: { type: String, required: true }, // Made required
+    phone: { type: String, default: null },
+    password: { type: String, default: null }, 
+    rationCard: { type: String, required: true },
+    aadhaar: { type: String, required: true, unique: true }, // Aadhaar must be unique per person
     address: { type: String, required: true }, // Made required
     district: { type: String, default: '' },
     cityId: { type: String, default: '' }, // For city selection
@@ -29,9 +29,11 @@ const userSchema = new mongoose.Schema({
     hospitalVerified: { type: Boolean, default: false },
     adminApproved: { type: Boolean, default: false },
     aiVerificationStatus: { type: String, enum: ['AI_VERIFIED', 'AI_REJECTED', 'PENDING_REVIEW'], default: 'PENDING_REVIEW' },
-    aiConfidenceScore: { type: Number, default: 0 },
+    aiConfidenceScore: { type: Number }, // Removed default: 0
     aiPredictedEligibility: { type: String, default: '' },
-    registeredAt: { type: Date, default: Date.now }
+    detectedKeywords: { type: [String], default: [] },
+    isRegistered: { type: Boolean, default: false },
+    registeredAt: { type: Date, default: null }
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);

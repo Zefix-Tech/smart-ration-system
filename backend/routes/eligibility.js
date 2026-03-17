@@ -68,7 +68,8 @@ router.post('/upload', auth, upload.single('document'), async (req, res) => {
                 headers: { ...formData.getHeaders() }
             });
 
-            const { status, confidenceScore, predictedEligibility } = mlRes.data;
+            const { status, confidence, detectedKeywords } = mlRes.data;
+            const confidenceScore = Math.round(confidence * 100);
 
             // Updated User with AI results
             user = await User.findByIdAndUpdate(
@@ -76,7 +77,7 @@ router.post('/upload', auth, upload.single('document'), async (req, res) => {
                 { 
                     aiVerificationStatus: status,
                     aiConfidenceScore: confidenceScore,
-                    aiPredictedEligibility: predictedEligibility
+                    detectedKeywords: detectedKeywords || []
                 },
                 { new: true }
             ).select('-password');
