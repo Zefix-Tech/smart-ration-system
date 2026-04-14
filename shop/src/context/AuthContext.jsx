@@ -31,10 +31,11 @@ export const AuthProvider = ({ children }) => {
                 setAdmin(res.data);
                 sessionStorage.setItem('srms_admin_data', JSON.stringify(res.data));
             } else {
-                sessionStorage.removeItem('srms_shop_token');
+                logout();
             }
         } catch (err) {
-            sessionStorage.removeItem('srms_shop_token');
+            console.error('Session validation failed:', err);
+            logout();
         } finally {
             setLoading(false);
         }

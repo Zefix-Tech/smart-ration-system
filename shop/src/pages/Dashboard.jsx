@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
 import { Users, ShoppingBag, Bell, CheckCircle, Send, TrendingUp, Package, Truck } from 'lucide-react';
 import toast from 'react-hot-toast';
 import {
@@ -31,10 +32,11 @@ const Dashboard = () => {
     const [loading, setLoading] = useState(true);
     const [sending, setSending] = useState(false);
 
+    const { admin, loading: authLoading } = useAuth();
+
     const fetchDashboardData = async () => {
         try {
-            const adminData = JSON.parse(sessionStorage.getItem('srms_admin_data') || '{}');
-            if (adminData.role === 'delivery_person') {
+            if (admin?.role === 'delivery_person') {
                 window.location.href = '/delivery-requests';
                 return;
             }
@@ -52,8 +54,10 @@ const Dashboard = () => {
     };
 
     useEffect(() => {
-        fetchDashboardData();
-    }, []);
+        if (admin && !authLoading) {
+            fetchDashboardData();
+        }
+    }, [admin, authLoading]);
 
     const sendAlert = async () => {
         if (!stats || stats.stats.pendingUsers === 0) return;

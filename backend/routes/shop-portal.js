@@ -127,7 +127,13 @@ router.get('/notifications', async (req, res) => {
             ]
         }).sort({ sentAt: -1 }).lean();
 
-        const mapped = notifications.map(notif => ({
+        // Role-based filtering: Delivery persons only see delivery updates
+        const role = req.admin?.role || 'shop_owner';
+        const filtered = role === 'delivery_person' 
+            ? notifications.filter(n => ['delivery_update', 'delivery_otp'].includes(n.type))
+            : notifications;
+
+        const mapped = filtered.map(notif => ({
             ...notif,
             isRead: notif.readBy?.map(id => id.toString()).includes(req.admin.id) || false
         }));

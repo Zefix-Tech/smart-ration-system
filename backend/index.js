@@ -18,8 +18,6 @@ const { logAudit } = require('./middleware/audit');
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
-app.use('/api/admin', require('./routes/auth'));
-app.use('/api/shop', require('./routes/auth'));
 app.use('/api/auth/user', require('./routes/user-auth'));
 app.use('/api/user-portal', auth, require('./routes/user-portal'));
 app.use('/api/citizen', auth, require('./routes/user-portal'));

@@ -17,7 +17,7 @@ const notificationSchema = new mongoose.Schema({
     },
     recipientId: { type: mongoose.Schema.Types.ObjectId }, // Individual targeting
     shopId: { type: mongoose.Schema.Types.ObjectId, ref: 'Shop' }, // Shop-wide targeting
-    targetAudience: { type: String, enum: ['all', 'shop_owners', 'users', 'specific'], default: 'specific' }, // Legacy support
+    targetAudience: { type: String, enum: ['all', 'shop_owners', 'users', 'admin', 'specific'], default: 'specific' }, // Legacy support
     readBy: [{ type: mongoose.Schema.Types.ObjectId }], 
     sentAt: { type: Date, default: Date.now }
 }, { timestamps: true });

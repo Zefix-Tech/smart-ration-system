@@ -14,7 +14,7 @@ const TopBar = ({ toggleSidebar }) => {
         const fetchNotificationCount = async () => {
             try {
                 const token = sessionStorage.getItem('srms_token');
-                const res = await axios.get('http://localhost:5001/api/notifications', {
+                const res = await axios.get('http://localhost:5001/api/notifications/admin', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 if (res.data && Array.isArray(res.data)) {

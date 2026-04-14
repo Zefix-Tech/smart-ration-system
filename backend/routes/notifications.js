@@ -8,8 +8,14 @@ router.get('/admin', async (req, res) => {
         if (!req.admin) return res.status(403).json({ message: 'Access denied' });
         
         const userId = req.admin.id;
+        // Admin sees direct messages AND broad announcements (Global)
         const notifications = await Notification.find({ 
-            recipientRole: 'admin' 
+            $or: [
+                { recipientRole: 'admin' },
+                { recipientRole: 'all' },
+                { targetAudience: 'all' },
+                { targetAudience: 'admin' }
+            ]
         }).sort({ sentAt: -1 }).limit(50).lean();
         
         const mapped = notifications.map(notif => ({
@@ -52,16 +58,34 @@ router.get('/citizen', async (req, res) => {
 router.get('/shop', async (req, res) => {
     try {
         const adminId = req.admin?.id || req.user?.id;
-        const shopId = req.shopId;
+        let shopId = req.shopId;
         
-        if (!shopId) return res.status(400).json({ message: 'Shop ID not found in session' });
+        // If shopId is missing (e.g. from general notifications route), fetch it
+        if (!shopId && req.admin?.id) {
+            const Admin = require('../models/Admin');
+            const admin = await Admin.findById(req.admin.id).populate('shop');
+            shopId = admin?.shop?._id;
+        }
+        
+        if (!shopId) return res.status(400).json({ message: 'Shop ID not found in session or no shop associated' });
 
         const notifications = await Notification.find({ 
-            recipientRole: 'shop',
-            shopId: shopId
+            $or: [
+                { recipientRole: 'all' },
+                { targetAudience: 'all' },
+                { targetAudience: 'shop_owners' },
+                { recipientRole: 'shop', shopId: shopId },
+                { recipientRole: 'shop', shopId: { $exists: false } } // Broad shop announcements
+            ]
         }).sort({ sentAt: -1 }).limit(50).lean();
         
-        const mapped = notifications.map(notif => ({
+        // Role-based filtering: Delivery persons only see delivery updates
+        const role = req.admin?.role || 'shop_owner';
+        const filtered = role === 'delivery_person' 
+            ? notifications.filter(n => ['delivery_update', 'delivery_otp'].includes(n.type))
+            : notifications;
+        
+        const mapped = filtered.map(notif => ({
             ...notif,
             isRead: notif.readBy?.some(id => id.toString() === adminId) || false
         }));
@@ -95,14 +119,22 @@ router.post('/mark-read', async (req, res) => {
 // Create notification
 router.post('/', async (req, res) => {
     try {
-        const { title, message, type, priority, recipientRole, recipientId, shopId } = req.body;
+        const { title, message, type, priority, recipientRole, recipientId, shopId, targetAudience } = req.body;
         
+        // Map targetAudience to recipientRole if provided
+        let mappedRole = recipientRole || 'admin';
+        if (targetAudience === 'all') mappedRole = 'all';
+        else if (targetAudience === 'users') mappedRole = 'citizen';
+        else if (targetAudience === 'shop_owners') mappedRole = 'shop';
+        else if (targetAudience === 'admin') mappedRole = 'admin';
+
         const notification = new Notification({ 
             title, 
             message, 
             type: type || 'announcement', 
             priority: priority || 'normal', 
-            recipientRole: recipientRole || 'admin',
+            recipientRole: mappedRole,
+            targetAudience: targetAudience || (mappedRole === 'all' ? 'all' : 'specific'),
             recipientId,
             shopId,
             sentBy: req.admin?.id 

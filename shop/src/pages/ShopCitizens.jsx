@@ -1,19 +1,23 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
 import { Users, ShoppingBag, Clock } from 'lucide-react';
 import DataTable from '../components/DataTable';
 import '../styles/dashboard.css'; 
 
 const ShopCitizens = () => {
+    const { admin, loading: authLoading } = useAuth();
     const [citizens, setCitizens] = useState([]);
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
 
     useEffect(() => {
-        fetchStats();
-        fetchCitizens();
-    }, []);
+        if (admin && !authLoading) {
+            fetchStats();
+            fetchCitizens();
+        }
+    }, [admin, authLoading]);
 
     useEffect(() => {
         const delayDebounceFn = setTimeout(() => {
