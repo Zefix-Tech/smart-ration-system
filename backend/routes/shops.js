@@ -1,8 +1,9 @@
 const express = require('express');
 const Shop = require('../models/Shop');
+const User = require('../models/User');
 const router = express.Router();
 
-// Get all shops
+// Get all shops (with dynamic usersServed count from User collection)
 router.get('/', async (req, res) => {
     try {
         const { search, status, page = 1, limit = 10 } = req.query;
@@ -16,8 +17,28 @@ router.get('/', async (req, res) => {
             ];
         }
         const total = await Shop.countDocuments(query);
-        const shops = await Shop.find(query).sort({ createdAt: -1 }).skip((page - 1) * limit).limit(parseInt(limit));
-        res.json({ shops, total, page: parseInt(page), pages: Math.ceil(total / limit) });
+        const shops = await Shop.find(query).sort({ createdAt: -1 }).skip((page - 1) * limit).limit(parseInt(limit)).lean();
+
+        // Dynamically count users assigned to each shop
+        const shopIds = shops.map(s => s._id);
+        const userCounts = await User.aggregate([
+            { $match: { shopId: { $in: shopIds } } },
+            { $group: { _id: '$shopId', count: { $sum: 1 } } }
+        ]);
+
+        // Build a lookup map: shopId (string) -> count
+        const countMap = {};
+        userCounts.forEach(({ _id, count }) => {
+            countMap[_id.toString()] = count;
+        });
+
+        // Attach dynamic usersServed to each shop
+        const shopsWithCount = shops.map(shop => ({
+            ...shop,
+            usersServed: countMap[shop._id.toString()] || 0
+        }));
+
+        res.json({ shops: shopsWithCount, total, page: parseInt(page), pages: Math.ceil(total / limit) });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }

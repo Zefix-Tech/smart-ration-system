@@ -122,7 +122,14 @@ const Shops = () => {
                 </div>
             )
         },
-        { header: 'Users Served', accessor: 'usersServed', render: (row) => <span className="font-semibold text-gray-700">{row.usersServed}</span> },
+        {
+            header: 'Users Served', accessor: 'usersServed',
+            render: (row) => (
+                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold ${(row.usersServed || 0) > 0 ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                    👤 {row.usersServed ?? 0}
+                </span>
+            )
+        },
         {
             header: 'Actions', render: (row) => (
                 <div className="flex-item gap-2">
